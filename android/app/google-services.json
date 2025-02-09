@@ -1,0 +1,84 @@
+{
+  "project_info": {
+    "project_number": "386220155641",
+    "project_id": "uollar-5b3f8",
+    "storage_bucket": "uollar-5b3f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386220155641:android:22db775150f0281b98b828",
+        "android_client_info": {
+          "package_name": "com.block.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386220155641-hv9t8k76n5c5e62rt70nvi0kl7j11aj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdsBkTCP429l7kAT8vViE95yMq5K6tUu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386220155641-hv9t8k76n5c5e62rt70nvi0kl7j11aj9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "386220155641-c1sklo5k33hb1s6n9dn7hkc8pc1ici6n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lh2424lxb.-uplus",
+                "app_store_id": "6444770647"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386220155641:android:78c228db4752e36398b828",
+        "android_client_info": {
+          "package_name": "com.ucard.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386220155641-hv9t8k76n5c5e62rt70nvi0kl7j11aj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdsBkTCP429l7kAT8vViE95yMq5K6tUu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386220155641-hv9t8k76n5c5e62rt70nvi0kl7j11aj9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "386220155641-c1sklo5k33hb1s6n9dn7hkc8pc1ici6n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lh2424lxb.-uplus",
+                "app_store_id": "6444770647"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
