@@ -8,6 +8,8 @@ import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Modules/AddressInfo/Addr
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Modules/AddressInfo/AddressInfoView.dart';
 
 import '../../../../../Common/AgreementPage.dart';
+import '../../../../../Common/StreamCenter.dart';
+import '../../../../LoginPage/Modules/AreaCodes/Builder/AreaCodesBuilder.dart';
 
 class ApplyRouter extends BaseRouter {
   //apply
@@ -28,5 +30,15 @@ class ApplyRouter extends BaseRouter {
   showAddressScene(BuildContext context, int type) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => AddressInfoBuilder(type).scene));
+  }
+
+  showAreaCodeScene(BuildContext context) {
+    Navigator.of(context)
+        .push(new MaterialPageRoute(
+            builder: (context) => AreaCodesBuilder().scene,
+            fullscreenDialog: true))
+        .then((value) {
+      StreamCenter.shared.applyStreamController.add(3);
+    });
   }
 }

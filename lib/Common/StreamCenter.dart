@@ -8,6 +8,7 @@ class StreamCenter {
   StreamController<int> rewardStreamController = StreamController.broadcast();
   StreamController<int> earnStreamController = StreamController.broadcast();
   StreamController<int> profileStreamController = StreamController.broadcast();
+
   // 0: get data   1: need fetch data
   StreamController<int> myWalletStreamController = StreamController.broadcast();
   StreamController<Map> refreshAllStreamController =
@@ -41,6 +42,8 @@ class StreamCenter {
       StreamController.broadcast();
   StreamController<int> newUserTaskStreamController =
       StreamController.broadcast();
+
+  StreamController<int> applyStreamController = StreamController.broadcast();
 
   StreamCenter._internal() {}
 }

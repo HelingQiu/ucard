@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_page_lifecycle/flutter_page_lifecycle.dart';
@@ -10,6 +11,8 @@ import 'package:ucardtemp/Common/ColorUtil.dart';
 import 'package:ucardtemp/Data/UserInfo.dart';
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Entity/CardInfoModel.dart';
 
+import '../../../../../Common/NumberPlus.dart';
+import '../../../../../Common/TextImageButton.dart';
 import '../../../../../Data/AppStatus.dart';
 import '../../../../../gen_a/A.dart';
 import '../../../../../main.dart';
@@ -20,6 +23,9 @@ class ApplyView extends StatelessWidget {
 
   StreamController<int> streamController = StreamController.broadcast();
   StreamController<int> applyStreamController = StreamController.broadcast();
+
+  final TextEditingController _phoneController =
+      TextEditingController(text: '');
 
   ScrollController _scrollController = ScrollController();
   final TextEditingController _cardNameController =
@@ -114,68 +120,107 @@ class ApplyView extends StatelessWidget {
                             SizedBox(
                               height: 20,
                             ),
-                            _buildAddress(context, 0),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            _buildAddress(context, 1),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            _buildAddress(context, 2),
-                            SizedBox(
-                              height: 20,
-                            ),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : Column(
+                                    children: [
+                                      _buildAddress(context, 0),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      _buildAddress(context, 1),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      _buildAddress(context, 2),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                    ],
+                                  ),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : PhoneInputView(context),
                             _buildCell(context, 0),
                             _buildCell(context, 1),
                             _buildCell(context, 2),
                             _buildCell(context, 3),
-                            _buildCell(context, 4),
-                            Padding(
-                              padding:
-                                  EdgeInsets.only(left: 16, right: 16, top: 10),
-                              child: Text(
-                                'The application Fee note'.tr() +
-                                    "${presenter.models.isNotEmpty ? presenter.models[_currentPageIndex].first_limit_fee : ""}" +
-                                    "The application Fee note1".tr(),
-                                style: TextStyle(
-                                    color: AppStatus.shared.textGreyColor,
-                                    fontSize: 12),
-                              ),
-                            ),
-                            Visibility(
-                              visible: true,
-                              // visible: presenter.card.cardType != "visa",
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    left: 16, right: 16, top: 20),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Name'.tr(),
-                                      style: TextStyle(
-                                          color: theme == AppTheme.light
-                                              ? AppStatus.shared.bgBlackColor
-                                              : AppStatus.shared.bgWhiteColor,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    Text(
-                                      '（optional）'.tr(),
+                            presenter.currentCard == 0
+                                ? _buildCell(context, 4)
+                                : SizedBox(),
+                            presenter.currentCard == 0
+                                ? Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 16, right: 16, top: 10),
+                                    child: Text(
+                                      'The application Fee note'.tr() +
+                                          "${presenter.models.isNotEmpty ? presenter.models[_currentPageIndex].first_limit_fee : ""}" +
+                                          "The application Fee note1".tr(),
                                       style: TextStyle(
                                           color: AppStatus.shared.textGreyColor,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
+                                          fontSize: 12),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                                visible: true,
-                                // visible: presenter.card.cardType != "visa",
-                                child: _buildCardnameView(context)),
-                            _buildProtocol(context),
+                                  )
+                                : SizedBox(),
+                            presenter.currentCard == 0
+                                ? Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 16, right: 16, top: 20),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Name'.tr(),
+                                          style: TextStyle(
+                                              color: theme == AppTheme.light
+                                                  ? AppStatus
+                                                      .shared.bgBlackColor
+                                                  : AppStatus
+                                                      .shared.bgWhiteColor,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        Text(
+                                          '（optional）'.tr(),
+                                          style: TextStyle(
+                                              color: AppStatus
+                                                  .shared.textGreyColor,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : SizedBox(),
+                            presenter.currentCard == 0
+                                ? _buildCardnameView(context)
+                                : SizedBox(),
+                            presenter.currentCard == 0
+                                ? _buildProtocol(context)
+                                : SizedBox(),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : Padding(
+                                    padding: const EdgeInsets.only(left: 16),
+                                    child: Text(
+                                      "Card Application Fee ".tr(),
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : _buildCell(context, 5),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : _buildCell(context, 6),
+                            presenter.currentCard == 0
+                                ? SizedBox()
+                                : _buildCell(context, 7),
+                            presenter.currentCard == 1
+                                ? _buildProtocol(context)
+                                : SizedBox(),
                             SizedBox(
                               height: 300,
                               // height:
@@ -190,7 +235,9 @@ class ApplyView extends StatelessWidget {
                             color: theme == AppTheme.light
                                 ? AppStatus.shared.bgWhiteColor
                                 : AppStatus.shared.bgBlackColor,
-                            child: _buildSubmitButton(context)),
+                            child: presenter.currentCard == 0
+                                ? _buildSubmitButton(context)
+                                : _buildSaveButton(context)),
                         bottom: 0,
                         height: 114,
                         width: MediaQuery.of(context).size.width,
@@ -455,6 +502,18 @@ class ApplyView extends StatelessWidget {
       title = 'Activation fee'.tr();
       content =
           '${m.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+    } else if (type == 5) {
+      title = 'Sub-Total'.tr();
+      content =
+          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+    } else if (type == 6) {
+      title = 'Shipping Fee'.tr();
+      content =
+          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+    } else if (type == 7) {
+      title = 'Pay'.tr();
+      content =
+          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
     }
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16),
@@ -476,9 +535,12 @@ class ApplyView extends StatelessWidget {
               width: 5,
             ),
             InkWell(
-              child: Image.asset(_theme == AppTheme.light
-                  ? A.assets_question_black
-                  : A.assets_apply_info),
+              child: Visibility(
+                visible: type != 5 && type != 6 && type != 7,
+                child: Image.asset(_theme == AppTheme.light
+                    ? A.assets_question_black
+                    : A.assets_apply_info),
+              ),
               onTap: () {
                 //
                 if (type == 0) {
@@ -579,9 +641,7 @@ class ApplyView extends StatelessWidget {
                   width: MediaQuery.of(context).size.width - 52,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: presenter.currentCard == 0
-                        ? Color(0xff232323)
-                        : Color(0xff2369FF),
+                    color: Color(0xff232323),
                   ),
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
@@ -592,6 +652,103 @@ class ApplyView extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget PhoneInputView(BuildContext context) {
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.only(top: 0, bottom: 10, left: 16, right: 16),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {
+                presenter.areaCodeButtonPressed(context);
+              },
+              child: Container(
+                height: 48,
+                width: 92,
+                decoration: BoxDecoration(
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgGreyLightColor
+                      : AppStatus.shared.bgGreyColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: TextImageButton(
+                    margin: 2,
+                    type: TextIconButtonType.imageRight,
+                    icon: Image.asset(_theme == AppTheme.light
+                        ? A.assets_Polygon_1
+                        : A.assets_home_bill_arrow),
+                    text: Text(
+                      // "+852".tr(),
+                      UserInfo.shared.areaCode == null
+                          ? "".tr()
+                          : "+${UserInfo.shared.areaCode!.interarea}",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: _theme == AppTheme.light
+                              ? AppStatus.shared.bgBlackColor
+                              : AppStatus.shared.bgWhiteColor),
+                    ),
+                    onTap: () {
+                      presenter.areaCodeButtonPressed(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              child: Container(
+                height: 48,
+                decoration: BoxDecoration(
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgGreyLightColor
+                      : AppStatus.shared.bgGreyColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextFormField(
+                  textAlign: TextAlign.start,
+                  autocorrect: false,
+                  controller: _phoneController,
+                  textAlignVertical: TextAlignVertical.center,
+                  style: TextStyle(
+                      color: _theme == AppTheme.light
+                          ? AppStatus.shared.bgBlackColor
+                          : AppStatus.shared.bgWhiteColor),
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                      border: InputBorder.none,
+                      hintText: "Phone Number".tr(),
+                      hintStyle: TextStyle(
+                          color: AppStatus.shared.textGreyColor, fontSize: 16)),
+                  onChanged: (text) {},
+                  onEditingComplete: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  onTap: () {
+                    _scrollController.animateTo(120,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.ease);
+                  },
+                  // onFieldSubmitted: (_){
+                  //   FocusScope.of(context).unfocus();
+                  // },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -716,6 +873,67 @@ class ApplyView extends StatelessWidget {
                   fontWeight: FontWeight.w500),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 20),
+      child: InkWell(
+        onTap: () {
+          //
+          FocusScope.of(context).unfocus();
+          showActivationConfirmationDiolog(context);
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Container(
+                height: 44,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color(0xff232323),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Center(
+                  child: Text(
+                    "Cancel".tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Container(
+                height: 44,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppStatus.shared.bgBlueColor,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Center(
+                  child: Text(
+                    "Pay".tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

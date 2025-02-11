@@ -101,4 +101,8 @@ class ApplyPresenter {
   gotoAddressInfoPage(BuildContext context, int type) {
     router.showAddressScene(context, type);
   }
+
+  areaCodeButtonPressed(BuildContext context) {
+    router.showAreaCodeScene(context);
+  }
 }
