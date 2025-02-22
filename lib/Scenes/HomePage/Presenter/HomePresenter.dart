@@ -5,6 +5,7 @@ import 'package:ucardtemp/Scenes/HomePage/Entity/MycardsModel.dart';
 import 'package:ucardtemp/Scenes/MainPage/Router/MainRouter.dart';
 
 import '../../../Common/Notification.dart';
+import '../../../Data/LoginCenter.dart';
 import '../../../Data/UserInfo.dart';
 import '../Entity/SettlementModel.dart';
 import '../Interactor/HomeInteractor.dart';
@@ -24,9 +25,11 @@ class HomePresenter {
 
   //卡账单当前页码
   int currentPage = 1;
+
   //总页面
   int totalPage = 1;
   bool hasMore = true;
+
   //卡账单列表数据
   List<SettlementModel> settleMentList = [];
 
@@ -101,6 +104,7 @@ class HomePresenter {
       if (element is Map<String, dynamic>) {
         var model = MycardsModel.parse(element);
         models.add(model);
+        debugPrint("image_bg is ${model.img_card_bg}");
       }
     });
     if (models.isNotEmpty) {
@@ -155,12 +159,15 @@ class HomePresenter {
     StreamCenter.shared.homeStreamController.add(0);
   }
 
-  Future<String> downPressed(String card_order,String settle_date,int currentPage) async {
+  Future<String> downPressed(
+      String card_order, String settle_date, int currentPage) async {
     return await fetchMysettlementDownUrl(card_order, settle_date, currentPage);
   }
 
-  Future<String> fetchMysettlementDownUrl(String card_order,String settle_date,int currentPage) async {
-    var body = await interactor.downSettlements(card_order, settle_date, currentPage);
+  Future<String> fetchMysettlementDownUrl(
+      String card_order, String settle_date, int currentPage) async {
+    var body =
+        await interactor.downSettlements(card_order, settle_date, currentPage);
     if (body != null) {
       var down_url = body["down_url"];
       print(down_url);
@@ -175,5 +182,87 @@ class HomePresenter {
     }
     var result = await UserInfo.shared.searchNotification();
     StreamCenter.shared.unReadMsgStreamController.add(0);
+  }
+
+  gotoSafePin(BuildContext context) {
+    router.showSafePin(context);
+  }
+
+  gotoCardSetting(BuildContext context) {
+    router.showCardSettingPage(context);
+  }
+
+  startSendCode(int codeType) async {
+    bool result = await sendCodePressed(UserInfo.shared.username, codeType);
+    if (result) {
+      view?.isSent = true;
+      view?.safetyController.add(0);
+    }
+  }
+
+  Future<bool> sendCodePressed(String address, int codeType) async {
+    List result = await LoginCenter().sendCode(
+        address, codeType, (address == UserInfo.shared.email) ? 1 : 2);
+    int number = result[0];
+    if (number != 0) {
+      //success, remaintime
+      view?.isSent = true;
+
+      view?.safetyController.add(0);
+      return true;
+    } else {
+      // String message = result[1];
+      // if (message.isNotEmpty) {
+      //   view?.showError(context, message);
+      // }
+    }
+    view?.isSent = false;
+    view?.safetyController.add(0);
+    return false;
+  }
+
+  //激活
+  Future<Map> active33Card(
+      String card_order, String code, String safepin) async {
+    var body = await interactor.activeCard(card_order, code, safepin);
+
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //冻结
+  Future<Map> freeze33Card(String card_order) async {
+    var body = await interactor.freezeCard(card_order);
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //解冻结
+  Future<Map> unfreeze33Card(
+      String card_order, String code, String safepin) async {
+    var body = await interactor.unfreeze33Card(card_order, code, safepin);
+
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //挂失
+  Future<Map> lost33Card(String card_order, String code, String cardpin) async {
+    var body = await interactor.lost33Card(card_order, code, cardpin);
+
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //姐挂失
+  Future<Map> unlost33Card(
+      String card_order, String code, String cardpin) async {
+    var body = await interactor.unlost33Card(card_order, code, cardpin);
+
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //modify pin
+  Future<Map> modpin33Card(String card_order, String code, String cardpin,
+      String new_pin, String new_pin_c, String safepin) async {
+    var body = await interactor.modpin33Card(
+        card_order, code, cardpin, new_pin, new_pin_c, safepin);
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
   }
 }

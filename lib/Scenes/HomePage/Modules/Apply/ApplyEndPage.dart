@@ -15,6 +15,7 @@ class ApplyEndPage extends StatefulWidget {
   String cardName = '';
   String level_name = '';
   String card_order = '';
+
   ApplyEndPage(this.cardType, this.cardLevel, this.cardName, this.level_name,
       this.card_order);
 
@@ -199,7 +200,9 @@ class ApplyEndPageState extends State<ApplyEndPage> {
             "",
             "",
             "",
-            ""
+            "",
+            1,
+            "",
           );
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => TopupBuilder(model).scene));

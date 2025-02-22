@@ -8,10 +8,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_page_lifecycle/flutter_page_lifecycle.dart';
 import 'package:ucardtemp/Common/ColorUtil.dart';
+import 'package:ucardtemp/Data/KeyboardTools.dart';
 import 'package:ucardtemp/Data/UserInfo.dart';
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Entity/CardInfoModel.dart';
+import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Modules/AddressInfo/AddressSingleton.dart';
 
 import '../../../../../Common/NumberPlus.dart';
+import '../../../../../Common/ShowMessage.dart';
 import '../../../../../Common/TextImageButton.dart';
 import '../../../../../Data/AppStatus.dart';
 import '../../../../../gen_a/A.dart';
@@ -77,8 +80,8 @@ class ApplyView extends StatelessWidget {
           body: GestureDetector(
             onTap: () {
               FocusScope.of(context).unfocus();
-              _scrollController.animateTo(0,
-                  duration: Duration(milliseconds: 500), curve: Curves.ease);
+              // _scrollController.animateTo(0,
+              //     duration: Duration(milliseconds: 500), curve: Curves.ease);
             },
             child: StreamBuilder<int>(
               stream: streamController.stream,
@@ -98,10 +101,10 @@ class ApplyView extends StatelessWidget {
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           children: [
-                            _buildCardTypeView(context),
-                            SizedBox(
-                              height: 2,
-                            ),
+                            // _buildCardTypeView(context),
+                            // SizedBox(
+                            //   height: 2,
+                            // ),
                             presenter.currentCard == 0
                                 ? _buildPageIndexView(context)
                                 : SizedBox(),
@@ -449,7 +452,7 @@ class ApplyView extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Physical Card",
+            "Physical Card".tr(),
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
@@ -461,7 +464,7 @@ class ApplyView extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "Limit of 100,000 HKD",
+            "Limit of 100,000 HKD".tr(),
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
@@ -475,46 +478,55 @@ class ApplyView extends StatelessWidget {
   }
 
   Widget _buildCell(BuildContext context, int type) {
-    if (presenter.models.isEmpty) {
-      return Container();
+    CardInfoModel? m;
+    if (presenter.currentCard == 0) {
+      if (presenter.models.isEmpty) {
+        return Container();
+      }
+      m = presenter.models[_currentPageIndex];
+    } else {
+      m = presenter.phycialModel;
     }
-    CardInfoModel m = presenter.models[_currentPageIndex];
+
     String title = '';
     String content = '';
     //@account
     if (type == 0) {
       title = 'Fee'.tr();
       content =
-          '${m.recharge_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.recharge_fee_unit}';
+          '${m?.recharge_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.recharge_fee_unit}';
     } else if (type == 1) {
       title = 'Invitation reward'.tr();
       content =
-          '${m.recommend_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.recommend_fee_unit}';
+          '${m?.recommend_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.recommend_fee_unit}';
     } else if (type == 2) {
       title = 'Card limit (month)'.tr();
       content =
-          '${m.month_limit} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.month_limit_unit}';
+          '${m?.month_limit} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.month_limit_unit}';
     } else if (type == 3) {
       title = 'Monthly fee'.tr();
       content =
-          '${m.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.month_fee_unit}';
+          '${m?.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.month_fee_unit}';
     } else if (type == 4) {
       title = 'Activation fee'.tr();
       content =
-          '${m.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
     } else if (type == 5) {
       title = 'Sub-Total'.tr();
       content =
-          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
     } else if (type == 6) {
       title = 'Shipping Fee'.tr();
       content =
-          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+          '${m?.card_shipping_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.card_shipping_fee_unit}';
     } else if (type == 7) {
       title = 'Pay'.tr();
+      double fee = double.parse(m?.open_fee ?? "0") +
+          double.parse(m?.card_shipping_fee ?? "0");
       content =
-          '0 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m.open_fee_unit}';
+          '${fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
     }
+    debugPrint("title is $title, content is $content");
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16),
       child: Container(
@@ -592,19 +604,44 @@ class ApplyView extends StatelessWidget {
     );
   }
 
+  getPasteBoardValue() async {
+    bool hasValue = await KeyboardTools.isClipboardHasValue();
+    presenter.pasteHasValue = hasValue;
+  }
+
   //
   Widget _buildAddress(BuildContext context, int addressType) {
+    getPasteBoardValue();
     String title = "";
     String address = "";
     if (addressType == 0) {
-      title = "Shipping To";
-      address =
-          "Emily Wong Flat/Room 1503, 15/F 1238 King's Road North Point, Hong Kong";
-    } else if (addressType == 1) {
-      title = "Mailing To";
-    } else if (addressType == 2) {
-      title = "Residential Address";
+      title = "Shipping To".tr();
+      if (AddressSingleton.shared.shippingDict != null) {
+        var dict = AddressSingleton.shared.shippingDict;
+        address =
+            "${dict["first_name"]}${dict["last_name"]}\n${dict["line_1"]}\n${dict["line_2"]}\n${dict["city"]},${dict["province"]},${dict["country_name"]}\n${dict["zip_code"]}";
+      }
+      debugPrint("shipping is ${AddressSingleton.shared.shippingDict}");
     }
+    if (addressType == 1) {
+      title = "Mailing To".tr();
+      if (AddressSingleton.shared.mailingDict != null) {
+        var dict = AddressSingleton.shared.mailingDict;
+        address =
+            "${dict["first_name"]}${dict["last_name"]}\n${dict["line_1"]}\n${dict["line_2"]}\n${dict["city"]},${dict["province"]},${dict["country_name"]}\n${dict["zip_code"]}";
+      }
+      debugPrint("Mailing is ${AddressSingleton.shared.mailingDict}");
+    }
+    if (addressType == 2) {
+      title = "Residential Address".tr();
+      if (AddressSingleton.shared.residentialDict != null) {
+        var dict = AddressSingleton.shared.residentialDict;
+        address =
+            "${dict["first_name"]}${dict["last_name"]}\n${dict["line_1"]}\n${dict["line_2"]}\n${dict["city"]},${dict["province"]},${dict["country_name"]}\n${dict["zip_code"]}";
+      }
+      debugPrint("Residential is ${AddressSingleton.shared.residentialDict}");
+    }
+    debugPrint("has value ${presenter.pasteHasValue}");
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16),
       child: Column(
@@ -625,7 +662,64 @@ class ApplyView extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       fontSize: 14),
                 ),
-                Image.asset(A.assets_mine_arrow_right)
+                Spacer(),
+                Visibility(
+                  visible: address.isEmpty && presenter.pasteHasValue,
+                  child: InkWell(
+                    onTap: () {
+                      if (addressType == 0) {
+                        debugPrint(
+                            "dict00 is ${AddressSingleton.shared.mailingDict}");
+                        if (AddressSingleton.shared.mailingDict != null) {
+                          AddressSingleton.shared.shippingDict =
+                              AddressSingleton.shared.mailingDict;
+                        } else if (AddressSingleton.shared.residentialDict !=
+                            null) {
+                          AddressSingleton.shared.shippingDict =
+                              AddressSingleton.shared.residentialDict;
+                        }
+                      } else if (addressType == 1) {
+                        debugPrint(
+                            "dict0 is ${AddressSingleton.shared.mailingDict}");
+                        if (AddressSingleton.shared.shippingDict != null) {
+                          AddressSingleton.shared.mailingDict =
+                              AddressSingleton.shared.shippingDict;
+                          debugPrint(
+                              "dict1 is ${AddressSingleton.shared.mailingDict}");
+                        } else if (AddressSingleton.shared.residentialDict !=
+                            null) {
+                          AddressSingleton.shared.mailingDict =
+                              AddressSingleton.shared.residentialDict;
+                          debugPrint(
+                              "dict2 is ${AddressSingleton.shared.mailingDict}");
+                        }
+                      } else {
+                        debugPrint(
+                            "dict11 is ${AddressSingleton.shared.mailingDict}");
+                        if (AddressSingleton.shared.shippingDict != null) {
+                          AddressSingleton.shared.residentialDict =
+                              AddressSingleton.shared.shippingDict;
+                        } else if (AddressSingleton.shared.mailingDict !=
+                            null) {
+                          AddressSingleton.shared.residentialDict =
+                              AddressSingleton.shared.mailingDict;
+                        }
+                      }
+                      debugPrint(
+                          "dict3 is ${AddressSingleton.shared.mailingDict}");
+                      streamController.add(0);
+                    },
+                    child: Image.asset(
+                      A.assets_paste_icon,
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Image.asset(A.assets_mine_arrow_right),
               ],
             ),
           ),
@@ -647,7 +741,17 @@ class ApplyView extends StatelessWidget {
                       EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
                   child: Text(address),
                 ),
-                Image.asset(A.assets_reward_copy),
+                InkWell(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: address));
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return ShowMessage(2, 'Copy to Clipboard'.tr(),
+                                styleType: 1, width: 257);
+                          });
+                    },
+                    child: Image.asset(A.assets_reward_copy)),
               ],
             ),
           ),
@@ -737,9 +841,9 @@ class ApplyView extends StatelessWidget {
                     FocusScope.of(context).unfocus();
                   },
                   onTap: () {
-                    _scrollController.animateTo(120,
-                        duration: Duration(milliseconds: 500),
-                        curve: Curves.ease);
+                    // _scrollController.animateTo(120,
+                    //     duration: Duration(milliseconds: 500),
+                    //     curve: Curves.ease);
                   },
                   // onFieldSubmitted: (_){
                   //   FocusScope.of(context).unfocus();
@@ -807,41 +911,65 @@ class ApplyView extends StatelessWidget {
         onTap: () {
           presenter.agreementButtonPressed(context);
         },
-        child: Container(
-          child: RichText(
-            //必传文本
-            text: TextSpan(
-              text: "Please read the ".tr(),
-              style: TextStyle(
-                color: _theme == AppTheme.light
-                    ? AppStatus.shared.bgBlackColor
-                    : AppStatus.shared.bgWhiteColor,
-                fontSize: 12,
-                height: 1.5,
-                decoration: TextDecoration.underline,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () {
+                presenter.isProtocolSelected = !presenter.isProtocolSelected;
+                streamController.add(0);
+              },
+              child: Image.asset(
+                presenter.isProtocolSelected
+                    ? A.assets_physical_selected
+                    : A.assets_phycail_unselected,
+                width: 20,
+                height: 20,
+                fit: BoxFit.fill,
               ),
-              //手势监听
-              // recognizer: ,
-              children: [
-                TextSpan(
-                  text: "${"Application Card Agreement".tr()}",
-                  style: TextStyle(
-                      color: AppStatus.shared.bgBlueColor,
-                      decoration: TextDecoration.underline,
-                      fontSize: 12),
-                ),
-                TextSpan(
-                  text: userPrivateProtocol,
-                  style: TextStyle(
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Container(
+                child: RichText(
+                  //必传文本
+                  text: TextSpan(
+                    text: "Please read the ".tr(),
+                    style: TextStyle(
                       color: _theme == AppTheme.light
                           ? AppStatus.shared.bgBlackColor
                           : AppStatus.shared.bgWhiteColor,
+                      fontSize: 12,
+                      height: 1.5,
                       decoration: TextDecoration.underline,
-                      fontSize: 12),
+                    ),
+                    //手势监听
+                    // recognizer: ,
+                    children: [
+                      TextSpan(
+                        text: "${"Application Card Agreement".tr()}",
+                        style: TextStyle(
+                            color: AppStatus.shared.bgBlueColor,
+                            decoration: TextDecoration.underline,
+                            fontSize: 12),
+                      ),
+                      TextSpan(
+                        text: userPrivateProtocol,
+                        style: TextStyle(
+                            color: _theme == AppTheme.light
+                                ? AppStatus.shared.bgBlackColor
+                                : AppStatus.shared.bgWhiteColor,
+                            decoration: TextDecoration.underline,
+                            fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -891,21 +1019,26 @@ class ApplyView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Container(
-                height: 44,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Color(0xff232323),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Center(
-                  child: Text(
-                    "Cancel".tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500),
+              child: InkWell(
+                onTap: () {
+                  presenter.cancelPressed(context);
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Color(0xff232323),
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Cancel".tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
               ),
@@ -914,21 +1047,56 @@ class ApplyView extends StatelessWidget {
               width: 10,
             ),
             Expanded(
-              child: Container(
-                height: 44,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppStatus.shared.bgBlueColor,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Center(
-                  child: Text(
-                    "Pay".tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500),
+              child: InkWell(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  var phone = _phoneController.text;
+                  var errorStr = "";
+                  if (AddressSingleton.shared.shippingDict == null) {
+                    errorStr = "Please enter shipping address".tr();
+                  } else if (AddressSingleton.shared.mailingDict == null) {
+                    errorStr = "Please enter mailing address".tr();
+                  } else if (AddressSingleton.shared.residentialDict == null) {
+                    errorStr = "Please enter residential address".tr();
+                  } else if (phone.isEmpty) {
+                    errorStr = "Please enter phone number".tr();
+                  } else if (!presenter.isProtocolSelected) {
+                    errorStr = "Please agree the agreement".tr();
+                  }
+                  if (errorStr.isNotEmpty) {
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return ShowMessage(2, errorStr,
+                              styleType: 1, width: 257);
+                        });
+                    return;
+                  }
+                  var body = {
+                    "phone": phone,
+                    "shipping_address": AddressSingleton.shared.shippingDict,
+                    "mailing_address": AddressSingleton.shared.mailingDict,
+                    "residential_address":
+                        AddressSingleton.shared.residentialDict,
+                  };
+                  presenter.payPressed(context, body);
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppStatus.shared.bgBlueColor,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Pay".tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
               ),
@@ -940,7 +1108,8 @@ class ApplyView extends StatelessWidget {
   }
 
   //弹窗
-  showAlertDialog(BuildContext context, String title, String content) {
+  showAlertDialog(BuildContext context, String title, String content,
+      {bool isPhycialSuccess = false}) {
     String buttonTitle = "OK".tr();
     showDialog(
       context: context,
@@ -995,6 +1164,9 @@ class ApplyView extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.of(context).pop();
+                        if (isPhycialSuccess) {
+                          presenter.backToRoot(context);
+                        }
                       },
                       child: Container(
                         height: 44,

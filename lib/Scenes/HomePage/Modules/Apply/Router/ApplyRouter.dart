@@ -28,8 +28,12 @@ class ApplyRouter extends BaseRouter {
   }
 
   showAddressScene(BuildContext context, int type) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => AddressInfoBuilder(type).scene));
+    Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (context) => AddressInfoBuilder(type).scene))
+        .then((value) {
+      StreamCenter.shared.applyStreamController.add(0);
+    });
   }
 
   showAreaCodeScene(BuildContext context) {
@@ -38,7 +42,7 @@ class ApplyRouter extends BaseRouter {
             builder: (context) => AreaCodesBuilder().scene,
             fullscreenDialog: true))
         .then((value) {
-      StreamCenter.shared.applyStreamController.add(3);
+      StreamCenter.shared.applyStreamController.add(0);
     });
   }
 }

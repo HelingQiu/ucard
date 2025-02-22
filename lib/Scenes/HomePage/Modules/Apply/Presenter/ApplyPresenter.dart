@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ucardtemp/Common/StreamCenter.dart';
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Entity/CardInfoModel.dart';
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Entity/CardTypeModel.dart';
+import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Modules/AddressInfo/AddressSingleton.dart';
 
 import '../../../../../Common/ShowMessage.dart';
 import '../../../../../Data/AppStatus.dart';
@@ -22,18 +23,31 @@ class ApplyPresenter {
 
   bool applying = false;
 
+  bool pasteHasValue = false;
+
   ApplyPresenter(this.interactor, this.router, this.card) {
-    fetchCardConfigsListData();
     fetchWalletData();
+    if (card.isPhysial) {
+      currentCard = 1;
+      fetchPhysicalCardConfigsData();
+    } else {
+      currentCard = 0;
+      fetchCardConfigsListData();
+    }
   }
 
   //卡列表
   List<CardInfoModel> models = [];
 
+  //实体卡
+  CardInfoModel? phycialModel;
+
   //钱包余额
   WalletModel? walletModel;
 
   int currentCard = 0; //虚拟卡 实体卡
+
+  bool isProtocolSelected = true;
 
   //点击申请
   applyConfirmPressed(
@@ -52,6 +66,13 @@ class ApplyPresenter {
       }
     });
     view?.streamController.add(0);
+  }
+
+  //实体卡信息
+  fetchPhysicalCardConfigsData() async {
+    var result = await interactor.fetchPhycialData();
+    debugPrint('PhysicalCardConfigsData $result');
+    phycialModel = result;
   }
 
   //获取钱包余额
@@ -104,5 +125,39 @@ class ApplyPresenter {
 
   areaCodeButtonPressed(BuildContext context) {
     router.showAreaCodeScene(context);
+  }
+
+  cancelPressed(BuildContext context) {
+    AddressSingleton.shared.shippingDict = null;
+    AddressSingleton.shared.mailingDict = null;
+    AddressSingleton.shared.residentialDict = null;
+    router.pop(context);
+  }
+
+  payPressed(BuildContext context, Map<String, dynamic> body) async {
+    var result = await interactor.applyPhycialCard(body);
+
+    // applying = false;
+    // view?.applyStreamController.add(0);
+    if (context.mounted) {
+      if (result[0] == 1) {
+        view?.showAlertDialog(context, "Congratulations!".tr(),
+            "Your physical card application is successful.".tr(),
+            isPhycialSuccess: true);
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return ShowMessage(2, result[1], styleType: 1, width: 257);
+            });
+      }
+    }
+  }
+
+  backToRoot(BuildContext context) {
+    AddressSingleton.shared.shippingDict = null;
+    AddressSingleton.shared.mailingDict = null;
+    AddressSingleton.shared.residentialDict = null;
+    router.popToRoot(context);
   }
 }

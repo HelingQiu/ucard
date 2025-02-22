@@ -521,7 +521,7 @@ class ApplyUserInfoView extends StatelessWidget {
           //跳转洲选择
           Navigator.of(context)
               .push(MaterialPageRoute(
-                  builder: (context) => AmericanStateBuilder().scene))
+                  builder: (context) => AmericanStateBuilder(false).scene))
               .then((value) {
             debugPrint("=======${AppStatus.shared.stateModel.title}");
             _stateController.setText(AppStatus.shared.stateModel.title);

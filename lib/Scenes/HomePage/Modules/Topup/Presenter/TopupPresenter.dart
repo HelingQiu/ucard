@@ -28,8 +28,17 @@ class TopupPresenter {
   //正在充值
   bool topuping = false;
 
+  double rate_usdt_usdc = 0.0;
+  double rate_usdt_hkd = 0.0;
+  int card33_min_recharge = 0;
+
   TopupPresenter(this.interactor, this.router, this.cardModel) {
-    fetchCardConfigsListData();
+    if (cardModel.service == 1) {
+      fetchCardConfigsListData();
+    } else {
+      fetchPhycialCard();
+    }
+
     fetchWalletData();
   }
 
@@ -47,11 +56,20 @@ class TopupPresenter {
     });
   }
 
+  fetchPhycialCard() async {
+    var result = await interactor.fetchPhycialData();
+    debugPrint('PhysicalCardConfigsData $result');
+    cardInfoModel = result;
+  }
+
   //获取钱包余额
   fetchWalletData() async {
     var result = await interactor.getWalletBalance();
     if (result != null) {
       List accountList = result["account"];
+      rate_usdt_usdc = result["rate_usdt_usdc"];
+      rate_usdt_hkd = result["rate_usdt_hkd"];
+      card33_min_recharge = result["card33_min_recharge"];
       if (accountList.isNotEmpty) {
         walletModel = WalletModel.parse(accountList.first);
       }
@@ -62,7 +80,12 @@ class TopupPresenter {
   //充值
   topupSuccessPressed(
       BuildContext context, String money, String receivedMoney) async {
-    var result = await interactor.rechargeCard(cardModel.card_order, money);
+    var result;
+    if (cardModel.service == 1) {
+      result = await interactor.rechargeCard(cardModel.card_order, money);
+    } else {
+      result = await interactor.recharge33Card(cardModel.card_order, money);
+    }
 
     topuping = false;
     view?.topupStreamController.add(0);

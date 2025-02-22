@@ -15,12 +15,14 @@ import 'dart:convert' as convert;
 class Api {
   //测试
   final String apiUrl = 'http://39.101.179.36:8001';
+
   //预发布
   // final String apiUrl = 'https://dpp8323pd.uollar.io';
   //生产
   // final String apiUrl = "http://cardapp.uollar.io";
 
   final String apiKey = "dajgoewhagpewagalewgoa";
+
 //法币请求的参数
   final key = 'uollar@test10102022';
   final secret = 'CIL6mMAutiEugsufOCW1vdPBMJGbs3NX';

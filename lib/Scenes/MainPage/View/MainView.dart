@@ -295,7 +295,7 @@ class MainViewState extends State<MainView> with WidgetsBindingObserver {
                       width: 32,
                       height: 32,
                     ),
-                    label: "Ucard".tr()),
+                    label: "UOK".tr()),
                 BottomNavigationBarItem(
                     icon: Image.asset(
                       theme == AppTheme.light

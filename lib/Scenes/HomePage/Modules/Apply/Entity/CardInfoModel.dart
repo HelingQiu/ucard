@@ -16,6 +16,11 @@ class CardInfoModel {
   String recommend_fee;
   String recommend_fee_unit;
 
+  String card_shipping_fee;
+  String card_shipping_fee_unit;
+  String close_fee;
+  String close_fee_unit;
+
   CardInfoModel(
       this.level_name,
       this.level,
@@ -32,7 +37,11 @@ class CardInfoModel {
       this.month_limit,
       this.month_limit_unit,
       this.recommend_fee,
-      this.recommend_fee_unit);
+      this.recommend_fee_unit,
+      this.card_shipping_fee,
+      this.card_shipping_fee_unit,
+      this.close_fee,
+      this.close_fee_unit);
 
   factory CardInfoModel.parse(Map<String, dynamic> dic) {
     String level_name = dic["level_name"] ?? "";
@@ -56,22 +65,32 @@ class CardInfoModel {
     String recommend_fee = dic["recommend_fee"] ?? "";
     String recommend_fee_unit = dic["recommend_fee_unit"] ?? "";
 
+    String card_shipping_fee = dic["card_shipping_fee"] ?? "";
+    String card_shipping_fee_unit = dic["card_shipping_fee_UNIT"] ?? "";
+    String close_fee = dic["close_fee"] ?? "";
+    String close_fee_unit = dic["close_fee_unit"] ?? "";
+
     return CardInfoModel(
-        level_name,
-        level,
-        recharge_fee,
-        recharge_fee_unit,
-        open_fee,
-        open_fee_unit,
-        first_limit_fee,
-        first_limit_fee_unit,
-        month_fee,
-        month_fee_unit,
-        upgrade_fee,
-        upgrade_fee_unit,
-        month_limit,
-        month_limit_unit,
-        recommend_fee,
-        recommend_fee_unit);
+      level_name,
+      level,
+      recharge_fee,
+      recharge_fee_unit,
+      open_fee,
+      open_fee_unit,
+      first_limit_fee,
+      first_limit_fee_unit,
+      month_fee,
+      month_fee_unit,
+      upgrade_fee,
+      upgrade_fee_unit,
+      month_limit,
+      month_limit_unit,
+      recommend_fee,
+      recommend_fee_unit,
+      card_shipping_fee,
+      card_shipping_fee_unit,
+      close_fee_unit,
+      close_fee,
+    );
   }
 }

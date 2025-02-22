@@ -8,8 +8,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_page_lifecycle/flutter_page_lifecycle.dart';
 import 'package:pinput/pinput.dart';
+import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Modules/AddressInfo/AddressSingleton.dart';
 
 import '../../../../../../Common/ColorUtil.dart';
+import '../../../../../../Common/ShowMessage.dart';
 import '../../../../../../Common/TextImageButton.dart';
 import '../../../../../../Data/AppStatus.dart';
 import '../../../../../../gen_a/A.dart';
@@ -30,7 +32,7 @@ class AddressInfoView extends StatelessWidget {
       TextEditingController(text: '');
   final TextEditingController _lastNameController =
       TextEditingController(text: '');
-  final TextEditingController _cityRegionController =
+  final TextEditingController _countryRegionController =
       TextEditingController(text: '');
   final TextEditingController _address1Controller =
       TextEditingController(text: '');
@@ -38,6 +40,7 @@ class AddressInfoView extends StatelessWidget {
       TextEditingController(text: '');
   final TextEditingController _stateController =
       TextEditingController(text: '');
+  final TextEditingController _cityController = TextEditingController(text: '');
   final TextEditingController _postCodeController =
       TextEditingController(text: '');
 
@@ -127,6 +130,7 @@ class AddressInfoView extends StatelessWidget {
                             _buildAddress1View(context),
                             _buildAddress2View(context),
                             _buildStateView(context),
+                            _buildCityView(context),
                             _buildPostCodeView(context),
                             SizedBox(
                               height: 400,
@@ -216,7 +220,7 @@ class AddressInfoView extends StatelessWidget {
                     contentPadding:
                         EdgeInsets.only(left: 15, right: 15, bottom: 15),
                     border: InputBorder.none,
-                    hintText: "First name",
+                    hintText: "First name".tr(),
                     hintStyle: TextStyle(
                         color: AppStatus.shared.textGreyColor, fontSize: 14)),
                 onChanged: (text) {
@@ -258,7 +262,7 @@ class AddressInfoView extends StatelessWidget {
                     contentPadding:
                         EdgeInsets.only(left: 15, right: 15, bottom: 15),
                     border: InputBorder.none,
-                    hintText: "Last name",
+                    hintText: "Last name".tr(),
                     hintStyle: TextStyle(
                         color: AppStatus.shared.textGreyColor, fontSize: 14)),
                 onChanged: (text) {
@@ -292,59 +296,73 @@ class AddressInfoView extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: _theme == AppTheme.light
-                  ? AppStatus.shared.bgGreyLightColor
-                  : AppStatus.shared.bgGreyColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: TextFormField(
-              textAlign: TextAlign.start,
-              autocorrect: false,
-              controller: _cityRegionController,
-              textAlignVertical: TextAlignVertical.center,
-              enabled: false,
-              style: TextStyle(
-                  color: _theme == AppTheme.light
-                      ? AppStatus.shared.bgBlackColor
-                      : AppStatus.shared.bgWhiteColor,
-                  fontSize: 16),
-              inputFormatters: [
-                CustomFormatter(),
-              ],
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(
-                  left: 15,
-                  right: 5,
-                  bottom: 1,
-                ),
-                border: InputBorder.none,
-                hintText: "City/region",
-                hintStyle: TextStyle(
-                    color: AppStatus.shared.textGreyColor, fontSize: 14),
-                suffixIcon: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: 52),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Image.asset(_theme == AppTheme.light
-                          ? A.assets_apply_down_black
-                          : A.assets_home_apply_down),
-                    )),
+          InkWell(
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => AmericanStateBuilder(true).scene))
+                  .then((value) {
+                debugPrint(
+                    "=======${AppStatus.shared.countryModel.countryname}");
+                _countryRegionController
+                    .setText(AppStatus.shared.countryModel.countryname);
+                streamController.add(0);
+              });
+            },
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: _theme == AppTheme.light
+                    ? AppStatus.shared.bgGreyLightColor
+                    : AppStatus.shared.bgGreyColor,
+                borderRadius: BorderRadius.circular(8),
               ),
-              onChanged: (text) {
-                //
-              },
-              onEditingComplete: () {
-                FocusScope.of(context).unfocus();
-                // _scrollController.animateTo(0,
-                //     duration: Duration(milliseconds: 500), curve: Curves.ease);
-              },
-              onTap: () {
-                // _scrollController.animateTo(220,
-                //     duration: Duration(milliseconds: 500), curve: Curves.ease);
-              },
+              child: TextFormField(
+                textAlign: TextAlign.start,
+                autocorrect: false,
+                controller: _countryRegionController,
+                textAlignVertical: TextAlignVertical.center,
+                enabled: false,
+                style: TextStyle(
+                    color: _theme == AppTheme.light
+                        ? AppStatus.shared.bgBlackColor
+                        : AppStatus.shared.bgWhiteColor,
+                    fontSize: 16),
+                inputFormatters: [
+                  CustomFormatter(),
+                ],
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(
+                    left: 15,
+                    right: 5,
+                    bottom: 1,
+                  ),
+                  border: InputBorder.none,
+                  hintText: "Country/Region".tr(),
+                  hintStyle: TextStyle(
+                      color: AppStatus.shared.textGreyColor, fontSize: 14),
+                  suffixIcon: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: 52),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Image.asset(_theme == AppTheme.light
+                            ? A.assets_apply_down_black
+                            : A.assets_home_apply_down),
+                      )),
+                ),
+                onChanged: (text) {
+                  //
+                },
+                onEditingComplete: () {
+                  FocusScope.of(context).unfocus();
+                  // _scrollController.animateTo(0,
+                  //     duration: Duration(milliseconds: 500), curve: Curves.ease);
+                },
+                onTap: () {
+                  // _scrollController.animateTo(220,
+                  //     duration: Duration(milliseconds: 500), curve: Curves.ease);
+                },
+              ),
             ),
           ),
         ],
@@ -380,7 +398,7 @@ class AddressInfoView extends StatelessWidget {
           decoration: InputDecoration(
               contentPadding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
               border: InputBorder.none,
-              hintText: "Address Line 1",
+              hintText: "Address Line 1".tr(),
               hintStyle: TextStyle(
                   color: AppStatus.shared.textGreyColor, fontSize: 14)),
           onChanged: (text) {
@@ -388,12 +406,12 @@ class AddressInfoView extends StatelessWidget {
           },
           onEditingComplete: () {
             FocusScope.of(context).unfocus();
-            _scrollController.animateTo(0,
-                duration: Duration(milliseconds: 500), curve: Curves.ease);
+            // _scrollController.animateTo(0,
+            //     duration: Duration(milliseconds: 500), curve: Curves.ease);
           },
           onTap: () {
-            _scrollController.animateTo(220,
-                duration: Duration(milliseconds: 500), curve: Curves.ease);
+            // _scrollController.animateTo(220,
+            //     duration: Duration(milliseconds: 500), curve: Curves.ease);
           },
         ),
       ),
@@ -428,7 +446,7 @@ class AddressInfoView extends StatelessWidget {
           decoration: InputDecoration(
               contentPadding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
               border: InputBorder.none,
-              hintText: "Address Line 2",
+              hintText: "Address Line 2".tr(),
               hintStyle: TextStyle(
                   color: AppStatus.shared.textGreyColor, fontSize: 14)),
           onChanged: (text) {
@@ -436,12 +454,12 @@ class AddressInfoView extends StatelessWidget {
           },
           onEditingComplete: () {
             FocusScope.of(context).unfocus();
-            _scrollController.animateTo(0,
-                duration: Duration(milliseconds: 500), curve: Curves.ease);
+            // _scrollController.animateTo(0,
+            //     duration: Duration(milliseconds: 500), curve: Curves.ease);
           },
           onTap: () {
-            _scrollController.animateTo(220,
-                duration: Duration(milliseconds: 500), curve: Curves.ease);
+            // _scrollController.animateTo(220,
+            //     duration: Duration(milliseconds: 500), curve: Curves.ease);
           },
         ),
       ),
@@ -454,14 +472,14 @@ class AddressInfoView extends StatelessWidget {
       child: InkWell(
         onTap: () {
           //跳转洲选择
-          Navigator.of(context)
-              .push(MaterialPageRoute(
-                  builder: (context) => AmericanStateBuilder().scene))
-              .then((value) {
-            debugPrint("=======${AppStatus.shared.stateModel.title}");
-            _stateController.setText(AppStatus.shared.stateModel.title);
-            streamController.add(0);
-          });
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(
+          //         builder: (context) => AmericanStateBuilder().scene))
+          //     .then((value) {
+          //   debugPrint("=======${AppStatus.shared.stateModel.title}");
+          //   _stateController.setText(AppStatus.shared.stateModel.title);
+          //   streamController.add(0);
+          // });
         },
         child: Container(
           height: 48,
@@ -476,28 +494,74 @@ class AddressInfoView extends StatelessWidget {
             autocorrect: false,
             controller: _stateController,
             textAlignVertical: TextAlignVertical.center,
-            enabled: false,
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
                     : AppStatus.shared.bgWhiteColor,
                 fontSize: 16),
             decoration: InputDecoration(
-                contentPadding: EdgeInsets.only(
-                  left: 15,
-                  right: 5,
-                  bottom: 1,
-                ),
-                suffixIcon: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: 52),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Image.asset(_theme == AppTheme.light
-                          ? A.assets_apply_down_black
-                          : A.assets_home_apply_down),
-                    )),
+                contentPadding:
+                    EdgeInsets.only(left: 15, right: 15, bottom: 15),
                 border: InputBorder.none,
-                hintText: "State",
+                hintText: "Province/ State".tr(),
+                hintStyle: TextStyle(
+                    color: AppStatus.shared.textGreyColor, fontSize: 14)),
+            onChanged: (text) {
+              //
+            },
+            onEditingComplete: () {
+              FocusScope.of(context).unfocus();
+              _scrollController.animateTo(0,
+                  duration: Duration(milliseconds: 500), curve: Curves.ease);
+            },
+            onTap: () {
+              _scrollController.animateTo(220,
+                  duration: Duration(milliseconds: 500), curve: Curves.ease);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCityView(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 16, right: 16, top: 10),
+      child: InkWell(
+        onTap: () {
+          //跳转洲选择
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(
+          //         builder: (context) => AmericanStateBuilder().scene))
+          //     .then((value) {
+          //   debugPrint("=======${AppStatus.shared.stateModel.title}");
+          //   _cityController.setText(AppStatus.shared.stateModel.title);
+          //   streamController.add(0);
+          // });
+        },
+        child: Container(
+          height: 48,
+          decoration: BoxDecoration(
+            color: _theme == AppTheme.light
+                ? AppStatus.shared.bgGreyLightColor
+                : AppStatus.shared.bgGreyColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: TextFormField(
+            textAlign: TextAlign.start,
+            autocorrect: false,
+            controller: _cityController,
+            textAlignVertical: TextAlignVertical.center,
+            style: TextStyle(
+                color: _theme == AppTheme.light
+                    ? AppStatus.shared.bgBlackColor
+                    : AppStatus.shared.bgWhiteColor,
+                fontSize: 16),
+            decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.only(left: 15, right: 15, bottom: 15),
+                border: InputBorder.none,
+                hintText: "City".tr(),
                 hintStyle: TextStyle(
                     color: AppStatus.shared.textGreyColor, fontSize: 14)),
             onChanged: (text) {
@@ -546,7 +610,7 @@ class AddressInfoView extends StatelessWidget {
           decoration: InputDecoration(
               contentPadding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
               border: InputBorder.none,
-              hintText: "Zip code",
+              hintText: "Zip code".tr(),
               hintStyle: TextStyle(
                   color: AppStatus.shared.textGreyColor, fontSize: 14)),
           onChanged: (text) {
@@ -569,16 +633,14 @@ class AddressInfoView extends StatelessWidget {
   Widget _buildSubmitButton(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 50, top: 20),
-      child: InkWell(
-        onTap: () {
-          //
-          FocusScope.of(context).unfocus();
-          // submitApplyInfo(context);
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                presenter.cancelPressed(context);
+              },
               child: Container(
                 height: 44,
                 width: double.infinity,
@@ -598,10 +660,15 @@ class AddressInfoView extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                saveInfo(context);
+              },
               child: Container(
                 height: 44,
                 width: double.infinity,
@@ -621,10 +688,68 @@ class AddressInfoView extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  saveInfo(BuildContext context) async {
+    var firstName = _firstNameController.text;
+    var lastName = _lastNameController.text;
+    var countryName = _countryRegionController.text;
+    var line_1 = _address1Controller.text;
+    var line_2 = _address2Controller.text;
+    var province = _stateController.text;
+    var city = _cityController.text;
+    var zipcode = _postCodeController.text;
+
+    String error = "";
+    if (firstName.isEmpty) {
+      error = "Please enter firstName".tr();
+    } else if (lastName.isEmpty) {
+      error = "Please enter lastName".tr();
+    } else if (countryName.isEmpty) {
+      error = "Please enter Country/Region".tr();
+    } else if (line_1.isEmpty) {
+      error = "Please enter address line 1".tr();
+    } else if (line_2.isEmpty) {
+      error = "Please enter address line 2".tr();
+    } else if (province.isEmpty) {
+      error = "Please select Province/State".tr();
+    } else if (city.isEmpty) {
+      error = "Please select city".tr();
+    } else if (zipcode.isEmpty) {
+      error = "Please enter zip code".tr();
+    }
+    if (error.isNotEmpty) {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return ShowMessage(2, error, styleType: 1, width: 257);
+          });
+      return;
+    }
+    //提交
+    var addressInfo = {
+      "first_name": firstName,
+      "last_name": lastName,
+      "country_name": countryName,
+      "line_1": line_1,
+      "line_2": line_2,
+      "province": province,
+      "city": city,
+      "zip_code": zipcode,
+      "country_region": AppStatus.shared.countryModel.code,
+    };
+    if (presenter.type == 0) {
+      AddressSingleton.shared.shippingDict = addressInfo;
+    } else if (presenter.type == 1) {
+      AddressSingleton.shared.mailingDict = addressInfo;
+    } else {
+      AddressSingleton.shared.residentialDict = addressInfo;
+    }
+    presenter.savePressed(context);
   }
 
   showAddressAlertDialog(BuildContext context, String title, String content) {

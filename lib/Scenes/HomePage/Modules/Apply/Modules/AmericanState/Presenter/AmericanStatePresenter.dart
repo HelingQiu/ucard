@@ -13,8 +13,11 @@ class AmericanStatePresenter {
 
   //总数据
   List<AmericanStateModel> totalList = [];
+  List<CountryModel> countryTotalList = [];
 
-  AmericanStatePresenter(this.interactor, this.router) {
+  bool isCountryCode;
+
+  AmericanStatePresenter(this.interactor, this.router, this.isCountryCode) {
     // interactor.sendCode();
   }
 
@@ -24,12 +27,23 @@ class AmericanStatePresenter {
     view?.updateContent(codes);
   }
 
+  fetchCountryDatas() async {
+    var datas = await interactor.fetchCountrysData();
+    countryTotalList = datas;
+    view?.updateCountryContent(datas);
+  }
+
   areaPressed(BuildContext context, AmericanStateModel model) {
     AppStatus.shared.stateModel = model;
     router.pop(context);
   }
 
-  search(String text) {
+  countryPressed(BuildContext context, CountryModel model) {
+    AppStatus.shared.countryModel = model;
+    router.pop(context);
+  }
+
+  searchPressed(String text) {
     List<AmericanStateModel> codes = [];
     if (text != "") {
       totalList.forEach((element) {
@@ -41,5 +55,19 @@ class AmericanStatePresenter {
       codes = totalList;
     }
     view?.updateContent(codes);
+  }
+
+  countrySearchPressed(String text) {
+    List<CountryModel> codes = [];
+    if (text != "") {
+      countryTotalList.forEach((element) {
+        if (element.countryname.contains(text) || element.code.contains(text)) {
+          codes.add(element);
+        }
+      });
+    } else {
+      codes = countryTotalList;
+    }
+    view?.updateCountryContent(codes);
   }
 }

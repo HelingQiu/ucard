@@ -162,7 +162,7 @@ class TopupView extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
           child: Container(
-            height: 128,
+            height: presenter.cardModel.service == 2 ? 200 : 128,
             decoration: BoxDecoration(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgGreyLightColor
@@ -186,6 +186,32 @@ class TopupView extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             fontSize: 14),
                       ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: presenter.cardModel.service == 2,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      "1 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : "USDT"} ≈ ${presenter.rate_usdt_hkd}",
+                      style: TextStyle(
+                          color: AppStatus.shared.textGreyColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: presenter.cardModel.service == 2,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Top-up fee: ${presenter.cardInfoModel?.recharge_fee}${presenter.cardInfoModel?.recharge_fee_unit} HKD",
+                      style: TextStyle(
+                          color: AppStatus.shared.textGreyColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ),

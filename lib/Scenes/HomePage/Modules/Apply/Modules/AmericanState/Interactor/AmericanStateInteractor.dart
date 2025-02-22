@@ -33,4 +33,32 @@ class AmericanStateInteractor {
     }
     return areaCodes;
   }
+
+  Future<List<CountryModel>> fetchCountrysData() async {
+    var result = await Api().post("/api/getPhysicalCardCountrys", {}, true);
+    debugPrint("/api/getPhysicalCardCountrys = $result");
+    var dic = json.decode(result);
+    List<CountryModel> areaCodes = [];
+
+    if (dic != null) {
+      var code = dic["status_code"];
+      if (code != null) {
+        if (code == 200) {
+          List data = dic["data"];
+          if (data != null && data.isNotEmpty) {
+            data.forEach((element) {
+              var c = CountryModel.parse(element as Map<String, dynamic>);
+              areaCodes.add(c);
+            });
+          }
+        } else {
+          String message = dic["message"];
+          if (message != null) {
+            debugPrint("message = $message");
+          }
+        }
+      }
+    }
+    return areaCodes;
+  }
 }

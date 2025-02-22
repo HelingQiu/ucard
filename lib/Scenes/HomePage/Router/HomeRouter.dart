@@ -9,6 +9,8 @@ import 'package:ucardtemp/Scenes/HomePage/Modules/Topup/Builder/TopupBuilder.dar
 import 'package:ucardtemp/Scenes/HomePage/Modules/Upgrade/Builder/UpgradeBuilder.dart';
 
 import '../../../Common/BaseRouter.dart';
+import '../../MinePage/Modules/AccountSecurity/SafetyPin/SafetyPinBuilder.dart';
+import '../../MinePage/Modules/CardSettings/Builder/CardSettingsBuilder.dart';
 import '../Entity/SettlementModel.dart';
 
 class HomeRouter extends BaseRouter {
@@ -42,8 +44,20 @@ class HomeRouter extends BaseRouter {
         MaterialPageRoute(builder: (context) => DetailBuilder(model).scene));
   }
 
-  showBillPage(BuildContext context) {
+  //跳转卡设置
+  showCardSettingPage(BuildContext context) {
     Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => BillBuilder().scene));
+        MaterialPageRoute(builder: (context) => CardSettingBuilder().scene));
+  }
+
+  showBillPage(BuildContext context) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => BillBuilder().scene));
+  }
+
+  //跳转设置安全码
+  showSafePin(BuildContext context) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => SafetyPinBuilder().scene));
   }
 }

@@ -23,31 +23,44 @@ class MycardsModel {
   String img_left_bottom;
   String img_card_center;
   String img_card_bg;
+  int service;
+  String hold_status;
 
-  MycardsModel(
-    this.card_order,
-    this.card_type,
-    this.level,
-    this.level_str,
-    this.card_name,
-    this.status,
-    this.card_no,
-    this.balance,
-    this.expiry_date,
-    this.expiry_year,
-    this.expiry_month,
-    this.card_cvv,
-    this.is_open,
-    this.hide_name,
-    this.close_fee,
-    this.close_fee_unit,
-    this.img1,
-    this.img2,
+  // const STATUS_WA = 'WA';//审核中
+  // const STATUS_P = 'P';//未制卡
+  // const STATUS_E = 'E';//未售出
+  // const STATUS_N = 'N';//已售出但未激活
+  // const STATUS_A = 'A';//售出並已激活
+  // const STATUS_X = 'X';//已過期
+  // const STATUS_T = 'T';//客戶已轉用另一張卡
+  // const STATUS_K = 'K';//口頭掛失
+  // const STATUS_L = 'L';//正式掛失
+  // const STATUS_R = 'R';//已退卡
+
+  MycardsModel(this.card_order,
+      this.card_type,
+      this.level,
+      this.level_str,
+      this.card_name,
+      this.status,
+      this.card_no,
+      this.balance,
+      this.expiry_date,
+      this.expiry_year,
+      this.expiry_month,
+      this.card_cvv,
+      this.is_open,
+      this.hide_name,
+      this.close_fee,
+      this.close_fee_unit,
+      this.img1,
+      this.img2,
       this.img_left_top,
       this.img_left_bottom,
       this.img_card_center,
       this.img_card_bg,
-  );
+      this.service,
+      this.hold_status,);
 
   factory MycardsModel.parse(Map<String, dynamic> dic) {
     String card_order = dic["card_order"] ?? "";
@@ -61,7 +74,7 @@ class MycardsModel {
     String card_name = dic["card_name"] ?? "";
     String status = dic["status"] ?? "";
     String card_no = dic["card_no"] ?? "";
-    String balance = dic["balance"] ?? "";
+    String balance = dic["balance"].toString() ?? "";
     // double balance = 0;
     // var bl = dic["balance"];
     // if (bl != null && bl is double) {
@@ -94,29 +107,38 @@ class MycardsModel {
     String img_card_center = dic["img_card_center"] ?? "";
     String img_card_bg = dic["img_card_bg"] ?? "";
 
+    int service = 1;
+    var ser = dic["service"];
+    if (ser != null && ser is int) {
+      service = ser;
+    }
+    String hold_status = dic["hold_status"] ?? "";
+
     return MycardsModel(
-        card_order,
-        card_type,
-        level,
-        level_str,
-        card_name,
-        status,
-        card_no,
-        balance,
-        expiry_date,
-        expiry_year,
-        expiry_month,
-        card_cvv,
-        is_open,
-        hide_name,
-        close_fee,
-        close_fee_unit,
-        img1,
-        img2,
+      card_order,
+      card_type,
+      level,
+      level_str,
+      card_name,
+      status,
+      card_no,
+      balance,
+      expiry_date,
+      expiry_year,
+      expiry_month,
+      card_cvv,
+      is_open,
+      hide_name,
+      close_fee,
+      close_fee_unit,
+      img1,
+      img2,
       img_left_top,
       img_left_bottom,
       img_card_center,
-      img_card_bg
+      img_card_bg,
+      service,
+      hold_status,
     );
   }
 }

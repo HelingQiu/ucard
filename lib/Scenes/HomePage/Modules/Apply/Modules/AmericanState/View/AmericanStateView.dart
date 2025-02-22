@@ -13,9 +13,14 @@ class AmericanStateView extends StatelessWidget {
   final TextEditingController _searchController =
       TextEditingController(text: '');
   List<AmericanStateModel> areaCodes = [];
+  List<CountryModel> countryDatas = [];
 
   AmericanStateView(this.presenter) {
-    presenter.fetchAreaCodes();
+    if (presenter.isCountryCode) {
+      presenter.fetchCountryDatas();
+    } else {
+      presenter.fetchAreaCodes();
+    }
   }
 
   AppTheme _theme = AppTheme.dark;
@@ -27,7 +32,7 @@ class AmericanStateView extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            "State".tr(),
+            presenter.isCountryCode ? "Country".tr() : "State".tr(),
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
@@ -85,7 +90,11 @@ class AmericanStateView extends StatelessWidget {
                                       color: AppStatus.shared.textGreyColor,
                                       fontSize: 14)),
                               onChanged: (text) {
-                                presenter.search(text);
+                                if (presenter.isCountryCode) {
+                                  presenter.countrySearchPressed(text);
+                                } else {
+                                  presenter.searchPressed(text);
+                                }
                               },
                               onEditingComplete: () {
                                 FocusScope.of(context).unfocus();
@@ -95,14 +104,29 @@ class AmericanStateView extends StatelessWidget {
                   Expanded(
                     child: Container(
                       child: ListView.builder(
-                          itemCount: areaCodes.length,
+                          itemCount: presenter.isCountryCode
+                              ? countryDatas.length
+                              : areaCodes.length,
                           itemBuilder: (context, index) {
-                            AmericanStateModel model = areaCodes[index];
+                            var tempModel;
+                            if (presenter.isCountryCode) {
+                              CountryModel model = countryDatas[index];
+                              tempModel = model;
+                            } else {
+                              AmericanStateModel model = areaCodes[index];
+                              tempModel = model;
+                            }
+
                             return Container(
                               child: GestureDetector(
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () {
-                                  presenter.areaPressed(context, model);
+                                  if (presenter.isCountryCode) {
+                                    presenter.countryPressed(
+                                        context, tempModel);
+                                  } else {
+                                    presenter.areaPressed(context, tempModel);
+                                  }
                                 },
                                 child: Padding(
                                   padding: EdgeInsets.only(
@@ -112,7 +136,7 @@ class AmericanStateView extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "${model.title}",
+                                        "${presenter.isCountryCode ? tempModel.countryname : tempModel.title}",
                                         style: TextStyle(
                                             color: theme == AppTheme.light
                                                 ? AppStatus.shared.bgBlackColor
@@ -121,7 +145,7 @@ class AmericanStateView extends StatelessWidget {
                                       ),
                                       Spacer(),
                                       Text(
-                                        "${model.jx}",
+                                        "${presenter.isCountryCode ? tempModel.interarea : tempModel.jx}",
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
                                             color: theme == AppTheme.light
@@ -149,6 +173,11 @@ class AmericanStateView extends StatelessWidget {
 
   updateContent(List<AmericanStateModel> codes) {
     areaCodes = codes;
+    areaCodesStreamController.add(0);
+  }
+
+  updateCountryContent(List<CountryModel> results) {
+    countryDatas = results;
     areaCodesStreamController.add(0);
   }
 }

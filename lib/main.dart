@@ -28,6 +28,7 @@ void main() async {
       // empty debugPrint implementation in the release mode
     };
   }
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(EasyLocalization(
@@ -38,8 +39,8 @@ void main() async {
           Locale('en', 'US')
         ],
         path: 'local',
-        fallbackLocale:
-            Locale('en', 'US'), // Locale('en', 'US'),    //Locale('zh', 'CN'),
+        fallbackLocale: Locale('en', 'US'),
+        // Locale('en', 'US'),    //Locale('zh', 'CN'),
         assetLoader: JsonAssetLoader()));
   });
 }
@@ -79,7 +80,8 @@ class MyApp extends StatelessWidget {
               //     : ThemeData.light(),
               localizationsDelegates: context.localizationDelegates,
               supportedLocales: context.supportedLocales,
-              navigatorObservers: [], //路由监听
+              navigatorObservers: [],
+              //路由监听
               locale: context.locale,
               home: MainBuilder().scene,
               builder: (context, widget) {

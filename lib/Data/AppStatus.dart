@@ -4,9 +4,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ucardtemp/Data/UserInfo.dart';
+
 // import 'package:ucard/Model/AreaCodeModel.dart';
 // import 'package:ucard/Model/EarnModel.dart';
 import 'package:ucardtemp/Network/Api.dart';
+
 // import 'package:uollar/Model/CoinInfoModel.dart';
 // import 'package:uollar/Model/CoinMarketInfoModel.dart';
 // import 'package:uollar/Scenes/Common/CoinMarketCapApi.dart';
@@ -26,11 +28,13 @@ import '../Scenes/HomePage/Modules/Apply/Entity/AmericanStateModel.dart';
 
 class AppStatus {
   static AppStatus shared = new AppStatus._internal();
+
   //固定账号
   String specialAccount = "zhao0309@163.com";
 
   bool simpleMode = true;
   List<AreaCodeModel> areaCodes = [];
+
   // List<CoinInfoModel> coins = [];
   String registerAgreementUrl = "";
   List<String> marketSymbols =
@@ -69,6 +73,9 @@ class AppStatus {
 
   //洲
   AmericanStateModel stateModel = AmericanStateModel("", "");
+
+  //国家
+  CountryModel countryModel = CountryModel("", "", "");
 
   factory AppStatus() {
     return shared;

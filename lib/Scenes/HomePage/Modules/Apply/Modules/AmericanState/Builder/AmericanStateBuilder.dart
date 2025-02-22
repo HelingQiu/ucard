@@ -8,10 +8,10 @@ class AmericanStateBuilder {
 
   AmericanStateBuilder._(this.scene);
 
-  factory AmericanStateBuilder() {
+  factory AmericanStateBuilder(bool isCountry) {
     final router = AmericanStateRouter();
     final interactor = AmericanStateInteractor();
-    final presenter = AmericanStatePresenter(interactor, router);
+    final presenter = AmericanStatePresenter(interactor, router, isCountry);
     final scene = AmericanStateView(presenter);
     presenter.view = scene;
     return AmericanStateBuilder._(scene);
