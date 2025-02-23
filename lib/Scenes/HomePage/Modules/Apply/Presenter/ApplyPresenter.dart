@@ -141,9 +141,15 @@ class ApplyPresenter {
     // view?.applyStreamController.add(0);
     if (context.mounted) {
       if (result[0] == 1) {
-        view?.showAlertDialog(context, "Congratulations!".tr(),
-            "Your physical card application is successful.".tr(),
-            isPhycialSuccess: true);
+        if (card.service == 2) {
+          view?.showAlertDialog(context, "Congratulations!".tr(),
+              "Your physical card application is successful.".tr(),
+              isPhycialSuccess: true);
+        } else {
+          view?.showAlertDialog(context, "Congratulations!".tr(),
+              "Your virtual card application is successful.".tr(),
+              isPhycialSuccess: true);
+        }
       } else {
         showDialog(
             context: context,

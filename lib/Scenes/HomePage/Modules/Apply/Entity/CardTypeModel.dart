@@ -4,9 +4,12 @@ class CardTypeModel {
   String cardDes;
   int toApplyUser;
   bool isPhysial;
+  int service;
+  String currency;
+  String limit;
 
   CardTypeModel(this.cardBin, this.cardType, this.cardDes, this.toApplyUser,
-      this.isPhysial);
+      this.isPhysial, this.service, this.currency, this.limit);
 
   factory CardTypeModel.parse(Map<String, dynamic> dic) {
     String cardBin = dic["cardBin"] ?? "";
@@ -17,6 +20,15 @@ class CardTypeModel {
     if (toau != null && toau is int) {
       toApplyUser = toau;
     }
-    return CardTypeModel(cardBin, cardType, cardDes, toApplyUser, false);
+
+    int service = 1;
+    var serv = dic["service"];
+    if (serv != null && serv is int) {
+      service = serv;
+    }
+    String currency = dic["currency"] ?? "";
+    String limit = dic["limit"] ?? "";
+    return CardTypeModel(cardBin, cardType, cardDes, toApplyUser, false,
+        service, currency, limit);
   }
 }

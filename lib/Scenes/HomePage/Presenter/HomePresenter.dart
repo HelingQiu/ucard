@@ -7,6 +7,7 @@ import 'package:ucardtemp/Scenes/MainPage/Router/MainRouter.dart';
 import '../../../Common/Notification.dart';
 import '../../../Data/LoginCenter.dart';
 import '../../../Data/UserInfo.dart';
+import '../../../Model/WalletModel.dart';
 import '../Entity/SettlementModel.dart';
 import '../Interactor/HomeInteractor.dart';
 import '../Router/HomeRouter.dart';
@@ -23,15 +24,10 @@ class HomePresenter {
   //我的卡片列表
   List<MycardsModel> models = [];
 
-  //卡账单当前页码
-  int currentPage = 1;
+  //钱包余额
+  WalletModel? walletModel;
 
-  //总页面
-  int totalPage = 1;
-  bool hasMore = true;
-
-  //卡账单列表数据
-  List<SettlementModel> settleMentList = [];
+  bool showCardNum = false;
 
   HomePresenter(this.interactor, this.router) {
     // fetchMycardsList();
@@ -84,9 +80,9 @@ class HomePresenter {
   }
 
   //bill
-  gotoBillPage(BuildContext context) {
+  gotoBillPage(BuildContext context, MycardsModel model) {
     if (UserInfo.shared.isLoggedin) {
-      router.showBillPage(context);
+      router.showBillPage(context, model);
     } else {
       loginPressed(context);
     }
@@ -107,73 +103,11 @@ class HomePresenter {
         debugPrint("image_bg is ${model.img_card_bg}");
       }
     });
-    if (models.isNotEmpty) {
-      MycardsModel m = models[0];
-      getSettlementData(m);
-    }
+    // if (models.isNotEmpty) {
+    //   MycardsModel m = models[0];
+    //   getSettlementData(m);
+    // }
     view?.updateCardData();
-  }
-
-  //获取账单
-  getSettlementData(MycardsModel item) {
-    currentPage = 1;
-    DateFormat dateFormat = DateFormat("yyyy-MM");
-    String dateTime = dateFormat.format(selectTime);
-    fetchMysettlementList(item.card_order, dateTime, currentPage);
-  }
-
-  getSettlementMoreData(MycardsModel item) {
-    currentPage += 1;
-    DateFormat dateFormat = DateFormat("yyyy-MM");
-    String dateTime = dateFormat.format(selectTime);
-    fetchMysettlementList(item.card_order, dateTime, currentPage);
-  }
-
-  //请求我的账单
-  fetchMysettlementList(
-    String card_order,
-    String settle_date,
-    int currentPage,
-  ) async {
-    await UserInfo.shared;
-    var body =
-        await interactor.fetchSettlements(card_order, settle_date, currentPage);
-    if (currentPage == 1) {
-      settleMentList.clear();
-    }
-    if (body != null) {
-      var list = body['list'];
-      totalPage = body['totalPage'];
-      list.forEach((element) {
-        if (element is Map<String, dynamic>) {
-          var model = SettlementModel.parse(element);
-          settleMentList.add(model);
-        }
-      });
-    }
-    if (currentPage < totalPage) {
-      hasMore = true;
-    } else {
-      hasMore = false;
-    }
-    StreamCenter.shared.homeStreamController.add(0);
-  }
-
-  Future<String> downPressed(
-      String card_order, String settle_date, int currentPage) async {
-    return await fetchMysettlementDownUrl(card_order, settle_date, currentPage);
-  }
-
-  Future<String> fetchMysettlementDownUrl(
-      String card_order, String settle_date, int currentPage) async {
-    var body =
-        await interactor.downSettlements(card_order, settle_date, currentPage);
-    if (body != null) {
-      var down_url = body["down_url"];
-      print(down_url);
-      return down_url;
-    }
-    return "";
   }
 
   searchUnReadMsg() async {
@@ -263,6 +197,14 @@ class HomePresenter {
       String new_pin, String new_pin_c, String safepin) async {
     var body = await interactor.modpin33Card(
         card_order, code, cardpin, new_pin, new_pin_c, safepin);
+    return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //卡卡转账
+  Future<Map> transfer33Card(String card_order, String code, String cardpin,
+      String cardNo, String amount) async {
+    var body = await interactor.transfer33Card(
+        card_order, code, cardpin, cardNo, amount);
     return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
   }
 }

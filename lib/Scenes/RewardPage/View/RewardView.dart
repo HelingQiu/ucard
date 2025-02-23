@@ -89,7 +89,7 @@ class RewardView extends StatelessWidget {
                         _buildInviteBtn(context),
                         _buildTotalView(context),
                         _buildInviteDataView(context),
-                        _buildeToppedUpView(context),
+                        // _buildeToppedUpView(context),
                         _buildRecordListView(context),
                         SizedBox(
                           height: 20,
@@ -690,13 +690,16 @@ class RewardView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Rewards'.tr(),
-            style: TextStyle(
-                fontSize: 16,
-                color: _theme == AppTheme.light
-                    ? AppStatus.shared.bgBlackColor
-                    : AppStatus.shared.bgWhiteColor),
+          Visibility(
+            visible: presenter.awardsList.isNotEmpty,
+            child: Text(
+              'Rewards'.tr(),
+              style: TextStyle(
+                  fontSize: 16,
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgBlackColor
+                      : AppStatus.shared.bgWhiteColor),
+            ),
           ),
           SizedBox(
             height: 20,

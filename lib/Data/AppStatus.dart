@@ -381,4 +381,18 @@ class AppStatus {
     }
     return newStr;
   }
+
+  String meet4AddBlankAndHide(String val) {
+    val = val.substring(0, 4) + '*' * 8 + val.substring(12);
+    String newStr = "";
+    while (val.isNotEmpty) {
+      String subStr = val.substring(0, min(val.length, 4));
+      newStr += subStr;
+      if (subStr.length == 4 && newStr.length < 15) {
+        newStr += ' ';
+      }
+      val = val.substring(min(val.length, 4));
+    }
+    return newStr;
+  }
 }

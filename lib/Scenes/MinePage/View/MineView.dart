@@ -1,10 +1,17 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_page_lifecycle/flutter_page_lifecycle.dart';
+import 'package:signature/signature.dart';
 import 'package:ucardtemp/Common/ColorUtil.dart';
 import 'package:ucardtemp/Data/LoginCenter.dart';
 import 'package:ucardtemp/Data/UserInfo.dart';
@@ -23,80 +30,84 @@ class MineView extends StatelessWidget {
   StreamController<int> langStream = StreamController.broadcast();
   AppTheme _theme = AppTheme.dark;
 
+  final SignatureController _controller = SignatureController(
+    penStrokeWidth: 5,
+    penColor: Colors.red,
+  );
+
   MineView(this.presenter);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return BlocBuilder<ThemeCubit, AppTheme>(
-        builder: (context, theme) {
-          _theme = theme;
-          return PageLifecycle(
-              stateChanged: (appear) {
-                if (appear) {
-                  if (UserInfo.shared.isLoggedin) {
-                    LoginCenter().fetchUserInfo();
-                    StreamCenter.shared.profileStreamController.add(0);
-                  }
+    return BlocBuilder<ThemeCubit, AppTheme>(builder: (context, theme) {
+      _theme = theme;
+      return PageLifecycle(
+          stateChanged: (appear) {
+            if (appear) {
+              if (UserInfo.shared.isLoggedin) {
+                LoginCenter().fetchUserInfo();
+                StreamCenter.shared.profileStreamController.add(0);
+              }
+            }
+          },
+          child: StreamBuilder<int>(
+              stream: StreamCenter.shared.profileStreamController.stream,
+              builder: (context, snapshot) {
+                if (snapshot.data == 2) {
+                  //注销后发送消息
+                  Future.delayed(const Duration(milliseconds: 1000))
+                      .then((value) => {
+                            LoginPageNotification().dispatch(context),
+                            //通知弹出弹窗
+                            Future.delayed(const Duration(microseconds: 500))
+                                .then((value) => {
+                                      StreamCenter
+                                          .shared.refreshAllStreamController
+                                          .add({'type': 'deleteDialog'})
+                                    })
+                          });
                 }
-              },
-              child: StreamBuilder<int>(
-                stream: StreamCenter.shared.profileStreamController.stream,
-                builder: (context, snapshot) {
-                  if (snapshot.data == 2) {
-                    //注销后发送消息
-                    Future.delayed(const Duration(milliseconds: 1000)).then((value) => {
-                      LoginPageNotification().dispatch(context),
-                      //通知弹出弹窗
-                      Future.delayed(const Duration(microseconds: 500))
-                          .then((value) => {
-                        StreamCenter.shared.refreshAllStreamController
-                            .add({'type': 'deleteDialog'})
-                      })
-                    });
-                  }
-                  return Scaffold(
-                    extendBodyBehindAppBar: true,
-                    appBar: AppBar(
-                      iconTheme: IconThemeData(
-                        color: theme == AppTheme.light
-                            ? AppStatus.shared.bgBlackColor
-                            : AppStatus.shared.bgWhiteColor, //修改颜色
-                      ),
-                      elevation: 0,
-                      centerTitle: false,
-                      toolbarHeight: 40,
-                      backgroundColor: theme == AppTheme.light
-                          ? AppStatus.shared.bgWhiteColor
-                          : AppStatus.shared.bgBlackColor,
-                      title: Text(
-                        'Settings'.tr(),
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: theme == AppTheme.light
-                                ? AppStatus.shared.bgBlackColor
-                                : AppStatus.shared.bgWhiteColor),
-                      ),
-                    ),
-                    body: Container(
+                return Scaffold(
+                  extendBodyBehindAppBar: true,
+                  appBar: AppBar(
+                    iconTheme: IconThemeData(
                       color: theme == AppTheme.light
-                          ? AppStatus.shared.bgWhiteColor
-                          : AppStatus.shared.bgBlackColor,
-                      child: ListView(
-                        children: [
-                          _buildTopView(context, theme),
-                          _buildGeneralView(context),
-                          _buildSupportView(context),
-                          _buildVersionView(),
-                          _buildLoginOutView(context),
-                        ],
-                      ),
+                          ? AppStatus.shared.bgBlackColor
+                          : AppStatus.shared.bgWhiteColor, //修改颜色
                     ),
-                  );
-                }
-              )
-          );
-
-        });
+                    elevation: 0,
+                    centerTitle: false,
+                    toolbarHeight: 40,
+                    backgroundColor: theme == AppTheme.light
+                        ? AppStatus.shared.bgWhiteColor
+                        : AppStatus.shared.bgBlackColor,
+                    title: Text(
+                      'Settings'.tr(),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: theme == AppTheme.light
+                              ? AppStatus.shared.bgBlackColor
+                              : AppStatus.shared.bgWhiteColor),
+                    ),
+                  ),
+                  body: Container(
+                    color: theme == AppTheme.light
+                        ? AppStatus.shared.bgWhiteColor
+                        : AppStatus.shared.bgBlackColor,
+                    child: ListView(
+                      children: [
+                        _buildTopView(context, theme),
+                        _buildGeneralView(context),
+                        _buildSupportView(context),
+                        _buildVersionView(),
+                        _buildLoginOutView(context),
+                      ],
+                    ),
+                  ),
+                );
+              }));
+    });
   }
 
   //顶部
@@ -250,23 +261,23 @@ class MineView extends StatelessWidget {
                         'KYC',
                         kycStatus,
                         showKyc)),
-                InkWell(
-                  onTap: () {
-                    if (UserInfo.shared.isLoggedin) {
-                      presenter.cardSettingButtonPressed(context);
-                    } else {
-                      presenter.loginPressed(context);
-                    }
-                  },
-                  child: _buildCell(
-                      context,
-                      _theme == AppTheme.light
-                          ? A.assets_Group_39917
-                          : A.assets_card_setting_icon,
-                      'Card settings',
-                      '',
-                      true),
-                ),
+                // InkWell(
+                //   onTap: () {
+                //     if (UserInfo.shared.isLoggedin) {
+                //       presenter.cardSettingButtonPressed(context);
+                //     } else {
+                //       presenter.loginPressed(context);
+                //     }
+                //   },
+                //   child: _buildCell(
+                //       context,
+                //       _theme == AppTheme.light
+                //           ? A.assets_Group_39917
+                //           : A.assets_card_setting_icon,
+                //       'Card settings',
+                //       '',
+                //       true),
+                // ),
                 InkWell(
                   onTap: () {
                     if (UserInfo.shared.isLoggedin) {
@@ -507,5 +518,262 @@ class MineView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  //
+  showKycDialog(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        constraints: BoxConstraints(maxHeight: 220, minWidth: double.infinity),
+        builder: (BuildContext context2) {
+          return StatefulBuilder(
+              builder: (BuildContext context1, StateSetter mystate) {
+            return StreamBuilder<int>(
+                stream: null,
+                builder: (context, snapshot) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgWhiteColor
+                            : ColorsUtil.hexColor(0x2E2E2E),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              presenter.showKycPage(context);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(60),
+                                color: AppStatus.shared.bgBlueColor,
+                              ),
+                              margin: EdgeInsets.all(5),
+                              child: Center(
+                                child: Text(
+                                  "Personal identification documents such as ID cards or passports"
+                                      .tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: _theme == AppTheme.light
+                                          ? AppStatus.shared.bgBlackColor
+                                          : AppStatus.shared.bgWhiteColor,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showSignView(context);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(60),
+                                color: AppStatus.shared.bgBlueColor,
+                              ),
+                              margin: EdgeInsets.all(5),
+                              child: Center(
+                                child: Text(
+                                  "Sign".tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: _theme == AppTheme.light
+                                          ? AppStatus.shared.bgBlackColor
+                                          : AppStatus.shared.bgWhiteColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          });
+        }).whenComplete(() {});
+  }
+
+  //签名
+  showSignView(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        constraints: BoxConstraints(maxHeight: 380, minWidth: double.infinity),
+        builder: (BuildContext context2) {
+          return StatefulBuilder(
+              builder: (BuildContext context1, StateSetter mystate) {
+            return StreamBuilder<int>(
+                stream: null,
+                builder: (context, snapshot) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgWhiteColor
+                            : ColorsUtil.hexColor(0x2E2E2E),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            width: double.infinity,
+                            height: 240,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(60),
+                              color: Colors.white,
+                            ),
+                            margin: EdgeInsets.all(5),
+                            child: Center(
+                              child: Signature(
+                                controller: _controller,
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    _controller.clear();
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: AppStatus.shared.bgGreyColor,
+                                      borderRadius: BorderRadius.circular(22),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Clear".tr(),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    //
+                                    // Uint8List? signatureBytes =
+                                    //     await _controller.toPngBytes();
+                                    // // debugPrint("data is ${signatureBytes}");
+                                    // if (signatureBytes != null) {
+                                    //   String base64Image =
+                                    //       base64Encode(signatureBytes);
+                                    //   // 上传 base64Image
+                                    //   debugPrint(
+                                    //       "base64 is $base64Image -----hello");
+                                    // }
+
+                                    // final ByteData byteData = await rootBundle
+                                    //     .load("assets/test_pic.jpg");
+                                    // final Uint8List bytes =
+                                    //     byteData.buffer.asUint8List();
+                                    //
+                                    // // 转换为 Base64 字符串
+                                    // String base64String = base64Encode(bytes);
+
+                                    // 1. 加载资源文件为字节数据
+                                    final ByteData byteData = await rootBundle
+                                        .load("assets/test_pic.jpg");
+                                    final Uint8List bytes =
+                                        byteData.buffer.asUint8List();
+
+                                    // 2. 获取设备本地目录（临时目录或文档目录）
+                                    final Directory tempDir =
+                                        await getTemporaryDirectory();
+                                    // 或使用应用文档目录：
+                                    // final Directory appDocDir = await getApplicationDocumentsDirectory();
+
+                                    // 3. 生成本地文件名（保持原文件名）
+                                    final String fileName =
+                                        path.basename("assets/test_pic.jpg");
+                                    final File localFile =
+                                        File('${tempDir.path}/$fileName');
+                                    await localFile.writeAsBytes(bytes);
+
+                                    Uint8List imageBytes =
+                                        await localFile.readAsBytes();
+                                    String base64 = base64Encode(imageBytes);
+
+                                    debugPrint(
+                                        "base64111 is $base64 -----hello");
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: AppStatus.shared.bgBlueColor,
+                                      borderRadius: BorderRadius.circular(22),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Finished".tr(),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          });
+        }).whenComplete(() {}).then((result) {
+      // 弹窗关闭时，如果未保存（result != true），则清除数据
+      if (result != true) {
+        _controller.clear();
+      }
+    });
   }
 }

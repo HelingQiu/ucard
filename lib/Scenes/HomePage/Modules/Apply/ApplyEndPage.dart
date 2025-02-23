@@ -203,6 +203,16 @@ class ApplyEndPageState extends State<ApplyEndPage> {
             "",
             1,
             "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
           );
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => TopupBuilder(model).scene));

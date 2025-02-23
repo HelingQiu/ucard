@@ -79,6 +79,14 @@ class HomeView extends StatelessWidget {
   final TextEditingController _confirmPasswordController =
       TextEditingController(text: '');
 
+  ScrollController _transferScroController = ScrollController();
+  final TextEditingController _cardNumberController =
+      TextEditingController(text: '');
+  final TextEditingController _amountController =
+      TextEditingController(text: '');
+
+  StreamController<int> cardNumController = StreamController.broadcast();
+
   AppTheme _theme = AppTheme.dark;
 
   @override
@@ -96,7 +104,7 @@ class HomeView extends StatelessWidget {
             showCardInfo = false;
             if (_currentPageIndex != 0) {
               _currentPageIndex = 0;
-              presenter.settleMentList.clear();
+              // presenter.settleMentList.clear();
             }
             StreamCenter.shared.homeStreamController.add(0);
           }
@@ -352,11 +360,25 @@ class HomeView extends StatelessWidget {
     } else if (presenter.models.isEmpty) {
       return _emptyCardView(context);
     }
-    return FlipCard(
-      controller: _controller,
-      flipOnTouch: false,
-      front: _buildFrontView(context),
-      back: _buildBackView(context),
+    return InkWell(
+      onTap: () {
+        showCardInfo = !showCardInfo;
+        _controller.toggleCard();
+        if (showCardInfo) {
+          Future.delayed(const Duration(seconds: 30)).then((value) {
+            if (showCardInfo) {
+              _controller.toggleCard();
+              showCardInfo = !showCardInfo;
+            }
+          });
+        }
+      },
+      child: FlipCard(
+        controller: _controller,
+        flipOnTouch: false,
+        front: _buildFrontView(context),
+        back: _buildBackView(context),
+      ),
     );
   }
 
@@ -410,10 +432,10 @@ class HomeView extends StatelessWidget {
             onPageChanged: (index) {
               _currentPageIndex = index;
               _pageController2.jumpToPage(index);
-              MycardsModel m = presenter.models[_currentPageIndex];
-              DateFormat dateFormat = DateFormat("yyyy-MM");
-              String dateTime = dateFormat.format(presenter.selectTime);
-              presenter.fetchMysettlementList(m.card_order, dateTime, 1);
+              // MycardsModel m = presenter.models[_currentPageIndex];
+              // DateFormat dateFormat = DateFormat("yyyy-MM");
+              // String dateTime = dateFormat.format(presenter.selectTime);
+              // presenter.fetchMysettlementList(m.card_order, dateTime, 1);
               StreamCenter.shared.homeStreamController.add(0);
             },
             scrollDirection: Axis.horizontal,
@@ -437,12 +459,16 @@ class HomeView extends StatelessWidget {
                 cardBg = A.assets_home_forth_card_bg;
               }
               if (element.service == 2) {
-                cardBg = A.assets_phycial_bg;
+                cardBg = A.assets_home_first_card_bg;
+              } else if (element.service == 3) {
+                cardBg = A.assets_home_first_card_bg;
               }
               debugPrint("home imagebg is ${element.img_card_bg}");
               String statusStr = "";
               if (element.status == "WA") {
                 statusStr = "Under review".tr();
+              } else if (element.status == "WS") {
+                statusStr = "Approved for mailing".tr();
               } else if (element.status == "P") {
                 statusStr = "No card printed".tr();
               } else if (element.status == "E") {
@@ -522,7 +548,7 @@ class HomeView extends StatelessWidget {
                           child: Text(
                             element.service == 1
                                 ? '\$ ${element.balance}'
-                                : 'HKD ${element.balance}',
+                                : '${element.currency} ${element.balance}',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
@@ -562,7 +588,7 @@ class HomeView extends StatelessWidget {
                         bottom: 22,
                       ),
                       Visibility(
-                        visible: element.service == 2,
+                        visible: element.service == 2 || element.service == 3,
                         child: Positioned(
                           left: 20,
                           bottom: 20,
@@ -576,9 +602,9 @@ class HomeView extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        child: Image.asset(element.card_type == 'master'
-                            ? A.assets_home_master_icon2
-                            : A.assets_home_visa_icon2),
+                        child: Image.asset(element.card_type == 'visa'
+                            ? A.assets_home_visa_icon2
+                            : A.assets_home_master_icon2),
                         right: 20,
                         bottom: 18,
                       ),
@@ -612,7 +638,7 @@ class HomeView extends StatelessWidget {
               MycardsModel m = presenter.models[_currentPageIndex];
               DateFormat dateFormat = DateFormat("yyyy-MM");
               String dateTime = dateFormat.format(presenter.selectTime);
-              presenter.fetchMysettlementList(m.card_order, dateTime, 1);
+              // presenter.fetchMysettlementList(m.card_order, dateTime, 1);
               StreamCenter.shared.homeStreamController.add(0);
             },
             scrollDirection: Axis.horizontal,
@@ -660,33 +686,60 @@ class HomeView extends StatelessWidget {
                       Positioned(
                         left: 20,
                         top: 190 / 2 - 10,
-                        child: InkWell(
-                          onTap: () {
-                            Clipboard.setData(ClipboardData(text: cardNo));
-                            showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return ShowMessage(
-                                      2, 'Copy to Clipboard'.tr(),
-                                      styleType: 1, width: 257);
-                                });
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                AppStatus.shared.meet4AddBlank(cardNo),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                              Visibility(
-                                  visible: cardNo.isNotEmpty,
-                                  child:
-                                      Image.asset(A.assets_mine_contact_copy)),
-                            ],
-                          ),
-                        ),
+                        child: StreamBuilder<int>(
+                            stream: cardNumController.stream,
+                            builder: (context, snapshot) {
+                              return Row(
+                                children: [
+                                  Text(
+                                    !presenter.showCardNum
+                                        ? AppStatus.shared
+                                            .meet4AddBlankAndHide(cardNo)
+                                        : AppStatus.shared
+                                            .meet4AddBlank(cardNo),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Visibility(
+                                    visible: cardNo.isNotEmpty,
+                                    child: InkWell(
+                                      onTap: () {
+                                        presenter.showCardNum =
+                                            !presenter.showCardNum;
+                                        cardNumController.sink.add(0);
+                                      },
+                                      child: Image.asset(!presenter.showCardNum
+                                          ? A.assets_visible_eyes
+                                          : A.assets_un_visible_eyes),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Visibility(
+                                      visible: cardNo.isNotEmpty,
+                                      child: InkWell(
+                                          onTap: () {
+                                            Clipboard.setData(
+                                                ClipboardData(text: cardNo));
+                                            showDialog(
+                                                context: context,
+                                                builder: (_) {
+                                                  return ShowMessage(2,
+                                                      'Copy to Clipboard'.tr(),
+                                                      styleType: 1, width: 257);
+                                                });
+                                          },
+                                          child: Image.asset(
+                                              A.assets_mine_contact_copy))),
+                                ],
+                              );
+                            }),
                       ),
                       Visibility(
                         visible: (element.expiry_date.isNotEmpty),
@@ -754,9 +807,9 @@ class HomeView extends StatelessWidget {
                       ),
 
                       Positioned(
-                        child: Image.asset(element.card_type == 'master'
-                            ? A.assets_home_master_icon2
-                            : A.assets_home_visa_icon2),
+                        child: Image.asset(element.card_type == 'visa'
+                            ? A.assets_home_visa_icon2
+                            : A.assets_home_master_icon2),
                         right: 20,
                         bottom: 18,
                       ),
@@ -854,7 +907,7 @@ class HomeView extends StatelessWidget {
               onPressed: () {
                 //
                 if (presenter.models.isNotEmpty) {
-                  if (m.hold_status == "N") {
+                  if (m.status == "N") {
                     showSafetyAuthView(context, 1);
                   } else {
                     //
@@ -883,7 +936,9 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_topup_black
-                            : A.assets_home_topup)),
+                            : m.status == "N"
+                                ? A.assets_active_icon
+                                : A.assets_unactive_icon)),
                   ),
                   SizedBox(
                     height: 10,
@@ -917,10 +972,9 @@ class HomeView extends StatelessWidget {
                 //
                 if (presenter.models.isNotEmpty) {
                   MycardsModel item = presenter.models[_currentPageIndex];
-                  if (item.status == "WA") {
-                    return;
+                  if (item.status == "A") {
+                    presenter.topupButtonPressed(context, item);
                   }
-                  presenter.topupButtonPressed(context, item);
                 } else {
                   //请先申请卡片
                   if (UserInfo.shared.isLoggedin) {
@@ -945,7 +999,9 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_topup_black
-                            : A.assets_home_topup)),
+                            : m.status == "A"
+                                ? A.assets_home_topup
+                                : A.assets_un_topup_icon)),
                   ),
                   SizedBox(
                     height: 10,
@@ -1008,14 +1064,21 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_update_black
-                            : A.assets_home_upgrade)),
+                            : (m.status == "A" &&
+                                    (m.hold_status == "R" ||
+                                        m.hold_status == "N" ||
+                                        m.hold_status == "H"))
+                                ? A.assets_freeze_icon
+                                : A.assets_unfreeze_icon)),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   FittedBox(
                     child: Text(
-                      "Freeze".tr(),
+                      (m.status == "A" && m.hold_status == "H")
+                          ? "UnFreeze".tr()
+                          : "Freeze".tr(),
                       maxLines: 1,
                       style: TextStyle(
                           fontSize: 11,
@@ -1042,7 +1105,6 @@ class HomeView extends StatelessWidget {
                 if (UserInfo.shared.isLoggedin) {
                   if (presenter.models.isNotEmpty) {
                     MycardsModel item = presenter.models[_currentPageIndex];
-                    debugPrint("helloa");
                     if (item.status == "A") {
                       showSafetyAuthView(context, 4);
                     } else if (item.status == "K" || item.status == "L") {
@@ -1071,14 +1133,20 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_safecode_black
-                            : A.assets_home_detail)),
+                            : (m.status == "A" ||
+                                    m.status == "K" ||
+                                    m.status == "L")
+                                ? A.assets_lost_icon
+                                : A.assets_unlock_icon)),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   FittedBox(
                     child: Text(
-                      "Lost".tr(),
+                      (m.status == "K" || m.status == "L")
+                          ? "UnLost".tr()
+                          : "Lost".tr(),
                       maxLines: 1,
                       style: TextStyle(
                           fontSize: 11,
@@ -1105,6 +1173,9 @@ class HomeView extends StatelessWidget {
                 if (UserInfo.shared.isLoggedin) {
                   if (presenter.models.isNotEmpty) {
                     //
+                    if (m.status == "A") {
+                      showTransferDialog(context);
+                    }
                   } else {
                     //请先申请卡片
                     showTopError(context, 'Please apply card');
@@ -1128,7 +1199,9 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_transfer_icon
-                            : A.assets_transfer_icon)),
+                            : m.status == "A"
+                                ? A.assets_untransfer_icon
+                                : A.assets_real_trans_icon)),
                   ),
                   SizedBox(
                     height: 10,
@@ -1159,7 +1232,9 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
-                showModifyPinDialog(context);
+                if (m.status == "A") {
+                  showModifyPinDialog(context);
+                }
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1176,7 +1251,9 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_modify_icon
-                            : A.assets_modify_icon)),
+                            : m.status == "A"
+                                ? A.assets_modify_icon
+                                : A.assets_unmodifypin_icon)),
                   ),
                   SizedBox(
                     height: 10,
@@ -1207,7 +1284,9 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
-                presenter.gotoBillPage(context);
+                if (m.status == "A") {
+                  presenter.gotoBillPage(context, m);
+                }
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1224,7 +1303,9 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_bill_icon
-                            : A.assets_bill_icon)),
+                            : m.status == "A"
+                                ? A.assets_bill_icon
+                                : A.assets_unbill_icon)),
                   ),
                   SizedBox(
                     height: 10,
@@ -1497,56 +1578,51 @@ class HomeView extends StatelessWidget {
               ),
             ),
           ),
-          InkWell(
-            onTap: () {
-              debugPrint("dlkjfkaljfdkl");
-            },
-            child: Container(
-              width: width,
-              height: 80,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _theme == AppTheme.light
-                        ? AppStatus.shared.bgWhiteColor
-                        : AppStatus.shared.bgBlackColor,
-                    elevation: 0,
-                    padding: EdgeInsets.only(left: 3, right: 3)),
-                onPressed: () {
-                  presenter.gotoCardSetting(context);
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
+          SizedBox(
+            width: width,
+            height: 80,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: _theme == AppTheme.light
+                      ? AppStatus.shared.bgWhiteColor
+                      : AppStatus.shared.bgBlackColor,
+                  elevation: 0,
+                  padding: EdgeInsets.only(left: 3, right: 3)),
+              onPressed: () {
+                presenter.gotoCardSetting(context);
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 48,
+                    width: 48,
+                    decoration: BoxDecoration(
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgGreyLightColor
+                            : AppStatus.shared.bgDarkGreyColor,
+                        borderRadius: BorderRadius.circular(24)),
+                    child: Center(
+                        child: Image.asset(_theme == AppTheme.light
+                            ? A.assets_modify_icon
+                            : A.assets_modify_icon)),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FittedBox(
+                    child: Text(
+                      "Settings".tr(),
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontSize: 11,
                           color: _theme == AppTheme.light
-                              ? AppStatus.shared.bgGreyLightColor
-                              : AppStatus.shared.bgDarkGreyColor,
-                          borderRadius: BorderRadius.circular(24)),
-                      child: Center(
-                          child: Image.asset(_theme == AppTheme.light
-                              ? A.assets_modify_icon
-                              : A.assets_modify_icon)),
+                              ? AppStatus.shared.bgBlackColor
+                              : AppStatus.shared.bgWhiteColor),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    FittedBox(
-                      child: Text(
-                        "Settings".tr(),
-                        maxLines: 1,
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: _theme == AppTheme.light
-                                ? AppStatus.shared.bgBlackColor
-                                : AppStatus.shared.bgWhiteColor),
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
           ),
@@ -1561,7 +1637,8 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
-                presenter.gotoBillPage(context);
+                MycardsModel item = presenter.models[_currentPageIndex];
+                presenter.gotoBillPage(context, item);
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1603,262 +1680,61 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  //账单
-  Widget _buildBillRow(BuildContext context) {
-    DateFormat dateFormat = DateFormat("yyyy-MM");
-    String dateTime = dateFormat.format(presenter.selectTime);
-    return Container(
-      margin: EdgeInsets.only(left: 15, right: 10, top: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Bill'.tr(),
-            style: TextStyle(
-                fontSize: 16,
-                color: _theme == AppTheme.light
-                    ? AppStatus.shared.bgBlackColor
-                    : AppStatus.shared.bgWhiteColor,
-                fontWeight: FontWeight.w500),
-          ),
-          Container(
-            width: 107,
-            height: 32,
-            decoration: BoxDecoration(
-                color: _theme == AppTheme.light
-                    ? AppStatus.shared.bgGreyLightColor
-                    : AppStatus.shared.bgDarkGreyColor,
-                borderRadius: BorderRadius.circular(16)),
-            child: Center(
-              child: TextImageButton(
-                margin: 2,
-                type: TextIconButtonType.imageRight,
-                icon: Image.asset(_theme == AppTheme.light
-                    ? A.assets_Polygon_1
-                    : A.assets_home_bill_arrow),
-                text: Text(
-                  dateTime,
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: _theme == AppTheme.light
-                          ? AppStatus.shared.bgBlackColor
-                          : AppStatus.shared.bgWhiteColor),
-                ),
-                onTap: () {
-                  if (UserInfo.shared.isLoggedin) {
-                    showDateDiolog(context);
-                  } else {
-                    presenter.loginPressed(context);
-                  }
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  //账单列表
-  Widget _buildBillListView(BuildContext context) {
-    MycardsModel m = presenter.models[_currentPageIndex];
-    return Expanded(
-      child: EasyRefresh(
-        header: MaterialHeader(),
-        footer: MaterialFooter(),
-        onRefresh: () async {
-          await presenter.getSettlementData(m);
-        },
-        onLoad: () {
-          presenter.getSettlementMoreData(m);
-          if (!presenter.hasMore) {
-            return IndicatorResult.noMore;
-          }
-        },
-        child: Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              // scrollDirection: Axis.horizontal,
-              itemCount: presenter.settleMentList.length,
-              itemBuilder: (context, index) {
-                SettlementModel item = presenter.settleMentList[index];
-                var billAmt = "";
-                var transAmt = "";
-                var rightContent = "";
-                if (item.isCredit == "1") {
-                  //@account
-                  if (UserInfo.shared.email ==
-                      AppStatus.shared.specialAccount) {
-                    billAmt = "+${item.billCurrencyAmt} USD";
-                    transAmt = "+${item.transCurrencyAmt} USD";
-                  } else {
-                    billAmt = "+${item.billCurrencyAmt} ${item.billCurrency}";
-                    transAmt =
-                        "+${item.transCurrencyAmt} ${item.transCurrency}";
-                  }
-                  rightContent = "Permission".tr();
-                } else {
-                  //@account
-                  if (UserInfo.shared.email ==
-                      AppStatus.shared.specialAccount) {
-                    billAmt = "-${item.billCurrencyAmt} USD";
-                    transAmt = "-${item.transCurrencyAmt} USD";
-                  } else {
-                    billAmt = "-${item.billCurrencyAmt} ${item.billCurrency}";
-                    transAmt =
-                        "-${item.transCurrencyAmt} ${item.transCurrency}";
-                  }
-
-                  rightContent = "Consumption".tr();
-                }
-                double bot =
-                    (presenter.settleMentList.length == index - 1) ? 20.0 : 0.0;
-                return InkWell(
-                  onTap: () {
-                    //
-                    presenter.detailButtonPressed(context, item);
-                  },
-                  child: Container(
-                    height: 80,
-                    margin: EdgeInsets.only(
-                        left: 15, right: 15, top: 20, bottom: bot),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 0),
-                              child: Text(
-                                item.merchantName,
-                                style: TextStyle(
-                                    color: _theme == AppTheme.light
-                                        ? AppStatus.shared.bgBlackColor
-                                        : AppStatus.shared.bgWhiteColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                billAmt,
-                                style: TextStyle(
-                                    color: _theme == AppTheme.light
-                                        ? AppStatus.shared.bgBlackColor
-                                        : AppStatus.shared.bgWhiteColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(
-                                transAmt,
-                                style: TextStyle(
-                                    color: AppStatus.shared.textGreyColor,
-                                    fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                        //右边
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              rightContent,
-                              style: TextStyle(
-                                  color: _theme == AppTheme.light
-                                      ? AppStatus.shared.bgBlackColor
-                                      : AppStatus.shared.bgWhiteColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Text(
-                              item.settleDate,
-                              style: TextStyle(
-                                  color: AppStatus.shared.textGreyColor,
-                                  fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            InkWell(
-              onTap: () async {
-                MycardsModel m = presenter.models[_currentPageIndex];
-                DateFormat dateFormat = DateFormat("yyyy-MM");
-                String dateTime = dateFormat.format(presenter.selectTime);
-                String url = await presenter.downPressed(
-                    m.card_order, dateTime, presenter.currentPage);
-                print("url is ${url}");
-                launchUrlString(url, mode: LaunchMode.externalApplication);
-              },
-              child: Container(
-                height: 44,
-                width: 150,
-                decoration: BoxDecoration(
-                  color: AppStatus.shared.bgBlueColor,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Center(
-                  child: Text(
-                    "Download Bill".tr(),
-                    style: TextStyle(color: AppStatus.shared.bgWhiteColor),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  //日期弹窗
-  showDateDiolog(BuildContext context) {
-    DatePicker.showDatePicker(context,
-        minDateTime: DateTime(2021, 1, 01),
-        maxDateTime: DateTime.now(),
-        dateFormat: "yyyy-MM",
-        initialDateTime: presenter.selectTime,
-        pickerMode: DateTimePickerMode.date,
-        pickerTheme: DateTimePickerTheme(
-          backgroundColor: _theme == AppTheme.light
-              ? AppStatus.shared.bgWhiteColor
-              : ColorsUtil.hexColor(0x252525),
-          confirmTextStyle: TextStyle(
-              color: AppStatus.shared.bgWhiteColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w500),
-          titleHeight: 44,
-          pickerHeight: 217,
-          itemTextStyle: TextStyle(
-              color: _theme == AppTheme.light
-                  ? AppStatus.shared.bgBlackColor
-                  : AppStatus.shared.bgWhiteColor,
-              fontSize: 20,
-              fontWeight: FontWeight.w500),
-        ), onConfirm: (date, list) {
-      debugPrint('select time $date, $list');
-      presenter.selectTime = date;
-      StreamCenter.shared.homeStreamController.add(0);
-      MycardsModel m = presenter.models[_currentPageIndex];
-      presenter.getSettlementData(m);
-    });
-    return;
-  }
+  // //账单
+  // Widget _buildBillRow(BuildContext context) {
+  //   DateFormat dateFormat = DateFormat("yyyy-MM");
+  //   String dateTime = dateFormat.format(presenter.selectTime);
+  //   return Container(
+  //     margin: EdgeInsets.only(left: 15, right: 10, top: 10),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(
+  //           'Bill'.tr(),
+  //           style: TextStyle(
+  //               fontSize: 16,
+  //               color: _theme == AppTheme.light
+  //                   ? AppStatus.shared.bgBlackColor
+  //                   : AppStatus.shared.bgWhiteColor,
+  //               fontWeight: FontWeight.w500),
+  //         ),
+  //         Container(
+  //           width: 107,
+  //           height: 32,
+  //           decoration: BoxDecoration(
+  //               color: _theme == AppTheme.light
+  //                   ? AppStatus.shared.bgGreyLightColor
+  //                   : AppStatus.shared.bgDarkGreyColor,
+  //               borderRadius: BorderRadius.circular(16)),
+  //           child: Center(
+  //             child: TextImageButton(
+  //               margin: 2,
+  //               type: TextIconButtonType.imageRight,
+  //               icon: Image.asset(_theme == AppTheme.light
+  //                   ? A.assets_Polygon_1
+  //                   : A.assets_home_bill_arrow),
+  //               text: Text(
+  //                 dateTime,
+  //                 style: TextStyle(
+  //                     fontSize: 15,
+  //                     color: _theme == AppTheme.light
+  //                         ? AppStatus.shared.bgBlackColor
+  //                         : AppStatus.shared.bgWhiteColor),
+  //               ),
+  //               onTap: () {
+  //                 if (UserInfo.shared.isLoggedin) {
+  //                   showDateDiolog(context);
+  //                 } else {
+  //                   presenter.loginPressed(context);
+  //                 }
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildNodataView(BuildContext context) {
     return Container(
@@ -1908,6 +1784,8 @@ class HomeView extends StatelessWidget {
       title = "Lost Account Authorization".tr();
     } else if (type == 5) {
       title = "Modify PIN Account Authorization".tr();
+    } else if (type == 6) {
+      title = "Transfer Account Authorization".tr();
     }
     if (type == 1) {
       presenter.startSendCode(30);
@@ -1919,8 +1797,10 @@ class HomeView extends StatelessWidget {
       presenter.startSendCode(32);
     } else if (type == 5) {
       presenter.startSendCode(35);
+    } else if (type == 6) {
+      presenter.startSendCode(34);
     }
-
+    MycardsModel m = presenter.models[_currentPageIndex];
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -1982,9 +1862,27 @@ class HomeView extends StatelessWidget {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                _buildeSendCodeView(context),
+                                _buildeSendCodeView(context, type),
                                 SizedBox(
                                   height: 10,
+                                ),
+                                Visibility(
+                                  visible: type == 2 || type == 3,
+                                  child: Center(
+                                    child: Text(
+                                      type == 2
+                                          ? "${"Unfreeze Fee:".tr()} ${m.unfreeze_fee} ${m.unfreeze_fee_unit}"
+                                          : "${"Unlost Fee:".tr()} ${m.unlost_fee} ${m.unlost_fee_unit}",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 13),
+                                    ),
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: type == 2 || type == 3,
+                                  child: SizedBox(
+                                    height: 10,
+                                  ),
                                 ),
                                 InkWell(
                                   onTap: () async {
@@ -1995,7 +1893,9 @@ class HomeView extends StatelessWidget {
                                           context: context,
                                           builder: (_) {
                                             String error = "";
-                                            if (type == 3 || type == 4) {
+                                            if (type == 3 ||
+                                                type == 4 ||
+                                                type == 6) {
                                               error =
                                                   "Please enter card pin".tr();
                                             } else {
@@ -2019,8 +1919,7 @@ class HomeView extends StatelessWidget {
                                           });
                                       return;
                                     }
-                                    MycardsModel m =
-                                        presenter.models[_currentPageIndex];
+
                                     if (type == 1) {
                                       Map result = await presenter.active33Card(
                                           m.card_order, code, safePin);
@@ -2075,7 +1974,59 @@ class HomeView extends StatelessWidget {
                                       } else {
                                         showTopError(context, result["msg"]);
                                       }
-                                    } else if (type == 5) {}
+                                    } else if (type == 5) {
+                                      String oldPin =
+                                          _oldPasswordController.text;
+                                      String newPin =
+                                          _newPasswordController.text;
+                                      String newPinC =
+                                          _confirmPasswordController.text;
+                                      Map result = await presenter.modpin33Card(
+                                          m.card_order,
+                                          code,
+                                          oldPin,
+                                          newPin,
+                                          newPinC,
+                                          safePin);
+                                      Navigator.pop(context);
+                                      if (result["code"] == 200) {
+                                        showAlertDialog(
+                                            context,
+                                            "Congratulations!".tr(),
+                                            "Successful PIN Modification!"
+                                                .tr());
+                                        presenter.fetchMycardsList();
+                                      } else {
+                                        showTopError(context, result["msg"]);
+                                        _oldPasswordController.text = "";
+                                        _newPasswordController.text = "";
+                                        _confirmPasswordController.text = "";
+                                      }
+                                    } else if (type == 6) {
+                                      String cardNum =
+                                          _cardNumberController.text;
+                                      String amount = _amountController.text;
+
+                                      Map result =
+                                          await presenter.transfer33Card(
+                                              m.card_order,
+                                              code,
+                                              safePin,
+                                              cardNum,
+                                              amount);
+                                      Navigator.pop(context);
+                                      if (result["code"] == 200) {
+                                        showAlertDialog(
+                                            context,
+                                            "Congratulations!".tr(),
+                                            "Successful transfer!".tr());
+                                        presenter.fetchMycardsList();
+                                      } else {
+                                        showTopError(context, result["msg"]);
+                                        _cardNumberController.text = "";
+                                        _amountController.text = "";
+                                      }
+                                    }
                                   },
                                   child: Container(
                                     width: double.infinity,
@@ -2135,7 +2086,7 @@ class HomeView extends StatelessWidget {
       ),
     );
     String title = "";
-    if (type == 3 || type == 4) {
+    if (type == 3 || type == 4 || type == 6) {
       title = "Enter Your Card Pin".tr();
     } else {
       title = "Enter Your Safety Pin".tr();
@@ -2280,13 +2231,25 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildeSendCodeView(BuildContext context) {
+  Widget _buildeSendCodeView(BuildContext context, int type) {
+    int codeType = 30;
+    if (type == 1) {
+      codeType = 30;
+    } else if (type == 2) {
+      codeType = 31;
+    } else if (type == 3) {
+      codeType = 33;
+    } else if (type == 4) {
+      codeType = 32;
+    } else if (type == 5) {
+      codeType = 35;
+    }
     return Container(
         width: double.infinity,
         height: 48,
         child: ValueListenableBuilder<bool>(
           builder: (BuildContext context, bool value, Widget? child) {
-            return SendCodeButton(1, true, true, Colors.transparent, () {
+            return SendCodeButton(codeType, true, true, Colors.transparent, () {
               isSent = true;
               safetyController.add(0);
               // sendCodePressed(UserInfo.shared.username);
@@ -2559,13 +2522,13 @@ class HomeView extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        constraints: BoxConstraints(maxHeight: 620, minWidth: double.infinity),
+        constraints: BoxConstraints(maxHeight: 700, minWidth: double.infinity),
         builder: (BuildContext context2) {
           return StatefulBuilder(
               builder: (BuildContext context1, StateSetter mystate) {
             return StreamBuilder<int>(
                 stream: safetyController.stream,
-                builder: (context, snapshot) {
+                builder: (context3, snapshot) {
                   return Container(
                     decoration: BoxDecoration(
                         color: _theme == AppTheme.light
@@ -2668,7 +2631,13 @@ class HomeView extends StatelessWidget {
                                     children: [
                                       Expanded(
                                         child: InkWell(
-                                          onTap: () async {},
+                                          onTap: () async {
+                                            Navigator.pop(context);
+                                            _oldPasswordController.text = "";
+                                            _newPasswordController.text = "";
+                                            _confirmPasswordController.text =
+                                                "";
+                                          },
                                           child: Container(
                                             width: double.infinity,
                                             height: 44,
@@ -2697,6 +2666,29 @@ class HomeView extends StatelessWidget {
                                         child: InkWell(
                                           onTap: () async {
                                             //
+                                            String oldPin =
+                                                _oldPasswordController.text;
+                                            String newPin =
+                                                _newPasswordController.text;
+                                            String newPinC =
+                                                _confirmPasswordController.text;
+                                            String error = "";
+                                            if (oldPin.isEmpty) {
+                                              error =
+                                                  "Please enter old pin".tr();
+                                            } else if (newPin.isEmpty) {
+                                              error =
+                                                  "Please enter new pin".tr();
+                                            } else if (newPinC.isEmpty) {
+                                              error =
+                                                  "Please confirm new pin".tr();
+                                            }
+                                            if (error.isNotEmpty) {
+                                              showTopError(context, error);
+                                              return;
+                                            }
+                                            Navigator.pop(context);
+                                            showSafetyAuthView(context, 5);
                                           },
                                           child: Container(
                                             width: double.infinity,
@@ -2862,6 +2854,334 @@ class HomeView extends StatelessWidget {
           },
           onTap: () {
             _modifyScroController.animateTo(220,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          },
+        ),
+      ),
+    );
+  }
+
+  //卡卡转账
+  showTransferDialog(BuildContext context) {
+    MycardsModel model = presenter.models[_currentPageIndex];
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        constraints: BoxConstraints(maxHeight: 650, minWidth: double.infinity),
+        builder: (BuildContext context2) {
+          return StatefulBuilder(
+              builder: (BuildContext context1, StateSetter mystate) {
+            return StreamBuilder<int>(
+                stream: safetyController.stream,
+                builder: (context3, snapshot) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgWhiteColor
+                            : ColorsUtil.hexColor(0x2E2E2E),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                "Transfer".tr(),
+                                style: TextStyle(
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : AppStatus.shared.bgWhiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Amount available".tr(),
+                                style: TextStyle(
+                                    color: AppStatus.shared.textGreyColor,
+                                    fontSize: 13),
+                              ),
+                              Text("${model.balance}${model.currency}",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16)),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "To:".tr(),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              Expanded(child: _buildCardNumView(context3)),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Amount:".tr(),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Expanded(child: _buildAmountView(context3)),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                model.currency,
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                "Max",
+                                style: TextStyle(
+                                    color: AppStatus.shared.bgBlueColor,
+                                    fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Transfer fee:".tr(),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 13),
+                              ),
+                              Text(
+                                "${model.card_transfer_fee}${model.card_transfer_fee_unit}",
+                                style: TextStyle(
+                                    color: AppStatus.shared.bgBlueColor,
+                                    fontSize: 13),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            "Transfer fee will be deducted from your account balance."
+                                .tr(),
+                            style: TextStyle(
+                                color: AppStatus.shared.textGreyColor,
+                                fontSize: 13),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () async {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color: AppStatus.shared.bgGreyColor,
+                                          borderRadius:
+                                              BorderRadius.circular(22),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Cancel".tr(),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () async {
+                                        //
+                                        String amount = _amountController.text;
+                                        String cardNum =
+                                            _cardNumberController.text;
+                                        String error = "";
+                                        if (cardNum.isEmpty) {
+                                          error =
+                                              "Please enter Card Number".tr();
+                                        } else if (amount.isEmpty) {
+                                          error = "Please enter Amount".tr();
+                                        }
+                                        if (error.isNotEmpty) {
+                                          showTopError(context, error);
+                                          return;
+                                        }
+                                        Navigator.pop(context);
+                                        showSafetyAuthView(context, 6);
+                                      },
+                                      child: Container(
+                                        width: double.infinity,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color: AppStatus.shared.bgBlueColor,
+                                          borderRadius:
+                                              BorderRadius.circular(22),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Confirm".tr(),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          });
+        }).whenComplete(() {});
+  }
+
+  Widget _buildCardNumView(BuildContext context) {
+    return Container(
+      height: 48,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _theme == AppTheme.light
+              ? AppStatus.shared.bgGreyLightColor
+              : AppStatus.shared.bgGreyColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: TextFormField(
+          textAlign: TextAlign.start,
+          autocorrect: false,
+          obscureText: false,
+          controller: _cardNumberController,
+          textAlignVertical: TextAlignVertical.center,
+          style: TextStyle(
+              color: _theme == AppTheme.light
+                  ? AppStatus.shared.bgBlackColor
+                  : AppStatus.shared.bgWhiteColor),
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(
+                left: 15,
+                right: 5,
+                bottom: 14,
+              ),
+              border: InputBorder.none,
+              hintText: "Card Number".tr(),
+              hintStyle: TextStyle(
+                  color: AppStatus.shared.textGreyColor, fontSize: 14)),
+          onChanged: (text) {},
+          onEditingComplete: () {
+            FocusScope.of(context).unfocus();
+            _transferScroController.animateTo(0,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          },
+          onTap: () {
+            _transferScroController.animateTo(220,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAmountView(BuildContext context) {
+    return Container(
+      height: 48,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _theme == AppTheme.light
+              ? AppStatus.shared.bgGreyLightColor
+              : AppStatus.shared.bgGreyColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: TextFormField(
+          textAlign: TextAlign.start,
+          autocorrect: false,
+          obscureText: false,
+          controller: _amountController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(
+                RegExp(r'^\d+\.?\d{0,' + '${5}' + '}')),
+          ],
+          textAlignVertical: TextAlignVertical.center,
+          style: TextStyle(
+              color: _theme == AppTheme.light
+                  ? AppStatus.shared.bgBlackColor
+                  : AppStatus.shared.bgWhiteColor),
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(
+                left: 15,
+                right: 5,
+                bottom: 14,
+              ),
+              border: InputBorder.none,
+              hintText: "0.00".tr(),
+              hintStyle: TextStyle(
+                  color: AppStatus.shared.textGreyColor, fontSize: 14)),
+          onChanged: (text) {},
+          onEditingComplete: () {
+            FocusScope.of(context).unfocus();
+            _transferScroController.animateTo(0,
+                duration: Duration(milliseconds: 500), curve: Curves.ease);
+          },
+          onTap: () {
+            _transferScroController.animateTo(220,
                 duration: Duration(milliseconds: 500), curve: Curves.ease);
           },
         ),

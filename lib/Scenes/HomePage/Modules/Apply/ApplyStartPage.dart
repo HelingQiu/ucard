@@ -26,7 +26,7 @@ class ApplyStartPage extends StatefulWidget {
 class ApplyStartPageState extends State<ApplyStartPage> {
   List<CardTypeModel> virtualModels = [];
   List<CardTypeModel> physicalModels = [];
-  var selectIndex = 0;
+  var selectIndex = 1;
 
   @override
   void initState() {
@@ -60,7 +60,11 @@ class ApplyStartPageState extends State<ApplyStartPage> {
     virtualList.forEach((element) {
       if (element is Map<String, dynamic>) {
         var model = CardTypeModel.parse(element);
-        model.isPhysial = false;
+        if (model.service == 1) {
+          model.isPhysial = false;
+        } else {
+          model.isPhysial = true;
+        }
         virtualModels.add(model);
       }
     });
@@ -154,31 +158,6 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                       children: [
                         InkWell(
                           onTap: () {
-                            selectIndex = 0;
-                            setState(() {});
-                          },
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              color: selectIndex == 0
-                                  ? Color(0xff2369FF)
-                                  : Color(0xff232323),
-                            ),
-                            padding: EdgeInsets.only(left: 20, right: 20),
-                            child: Row(
-                              children: [
-                                Image.asset(A.assets_virtual_card),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Text("Virtual Card".tr()),
-                              ],
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () {
                             selectIndex = 1;
                             setState(() {});
                           },
@@ -198,6 +177,31 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                                   width: 20,
                                 ),
                                 Text("Physical Card".tr()),
+                              ],
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            selectIndex = 0;
+                            setState(() {});
+                          },
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              color: selectIndex == 0
+                                  ? Color(0xff2369FF)
+                                  : Color(0xff232323),
+                            ),
+                            padding: EdgeInsets.only(left: 20, right: 20),
+                            child: Row(
+                              children: [
+                                Image.asset(A.assets_virtual_card),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Text("Virtual Card".tr()),
                               ],
                             ),
                           ),
@@ -255,21 +259,27 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                               return;
                             }
                             if (selectIndex == 0) {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      ApplyBuilder(element).scene));
+                              if (element.service == 3) {
+                                showSafetyPinDiolog(context, element);
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        ApplyBuilder(element).scene));
+                              }
                             } else {
                               showSafetyPinDiolog(context, element);
                             }
                           },
                           child: _buildCell(
                               context,
-                              element.cardType == 'master'
-                                  ? A.assets_apply_master_card
-                                  : A.assets_apply_visa_logo1,
-                              element.cardType == 'master'
-                                  ? 'Mastercard'
-                                  : 'Visa',
+                              element.cardType == 'visa'
+                                  ? A.assets_apply_visa_logo1
+                                  : A.assets_apply_master_card,
+                              element.cardType == 'visa'
+                                  ? 'Visa(${element.currency})'
+                                  : element.cardType == 'master'
+                                      ? 'Mastercard(${element.currency})'
+                                      : 'UnionPay(${element.currency})',
                               element.cardDes),
                         ),
                       );

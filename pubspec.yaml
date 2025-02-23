@@ -88,6 +88,9 @@ dependencies:
   intl: ^0.18.1
   easy_localization: ^3.0.6
   logger: ^2.0.0
+  signature: ^5.5.0
+  path_provider: ^2.1.2  # 获取设备目录路径
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

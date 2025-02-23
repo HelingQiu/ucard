@@ -324,5 +324,9 @@
   "City": "市",
   "Save": "保存",
   "Invitation reward": "邀请奖励",
-  "Card Application Fee ": "卡片费用 "
+  "Card Application Fee ": "卡片费用 ",
+  "Approved for mailing": "已激活邮寄中",
+  "UnFreeze": "解冻",
+  "UnLost": "解挂失",
+  "Limit of": "限额"
 }

@@ -14,6 +14,7 @@ class MinePresenter {
   MineView? view;
   bool gotUpdate = false;
   String langStr = '';
+
   MinePresenter(this.interactor, this.router) {}
 
   //获取语言
@@ -42,10 +43,15 @@ class MinePresenter {
           UserInfo.shared.isKycVerified == 2) {
         return;
       }
-      router.showKYCIndexscene(context);
+      view?.showKycDialog(context);
     } else {
       LoginPageNotification().dispatch(context);
     }
+  }
+
+  //原kyc
+  showKycPage(BuildContext context) {
+    router.showKYCIndexscene(context);
   }
 
   //card setting

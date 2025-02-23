@@ -50,9 +50,9 @@ class HomeRouter extends BaseRouter {
         MaterialPageRoute(builder: (context) => CardSettingBuilder().scene));
   }
 
-  showBillPage(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => BillBuilder().scene));
+  showBillPage(BuildContext context, MycardsModel model) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => BillBuilder(model).scene));
   }
 
   //跳转设置安全码

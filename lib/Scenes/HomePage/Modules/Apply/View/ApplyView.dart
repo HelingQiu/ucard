@@ -127,9 +127,14 @@ class ApplyView extends StatelessWidget {
                                 ? SizedBox()
                                 : Column(
                                     children: [
-                                      _buildAddress(context, 0),
-                                      SizedBox(
-                                        height: 20,
+                                      Visibility(
+                                          visible: presenter.card.service == 2,
+                                          child: _buildAddress(context, 0)),
+                                      Visibility(
+                                        visible: presenter.card.service == 2,
+                                        child: SizedBox(
+                                          height: 20,
+                                        ),
                                       ),
                                       _buildAddress(context, 1),
                                       SizedBox(
@@ -217,7 +222,9 @@ class ApplyView extends StatelessWidget {
                                 : _buildCell(context, 5),
                             presenter.currentCard == 0
                                 ? SizedBox()
-                                : _buildCell(context, 6),
+                                : presenter.card.service == 2
+                                    ? _buildCell(context, 6)
+                                    : SizedBox(),
                             presenter.currentCard == 0
                                 ? SizedBox()
                                 : _buildCell(context, 7),
@@ -452,7 +459,9 @@ class ApplyView extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "Physical Card".tr(),
+            presenter.card.service == 3
+                ? "Virtual Card".tr()
+                : "Physical Card".tr(),
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
@@ -464,7 +473,8 @@ class ApplyView extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "Limit of 100,000 HKD".tr(),
+            "${"Limit of".tr()} ${presenter.card.limit} ${presenter.card.currency}"
+                .tr(),
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
@@ -502,29 +512,32 @@ class ApplyView extends StatelessWidget {
     } else if (type == 2) {
       title = 'Card limit (month)'.tr();
       content =
-          '${m?.month_limit} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.month_limit_unit}';
+          '${presenter.card.limit} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     } else if (type == 3) {
       title = 'Monthly fee'.tr();
       content =
-          '${m?.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.month_fee_unit}';
+          '${m?.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     } else if (type == 4) {
       title = 'Activation fee'.tr();
       content =
-          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     } else if (type == 5) {
       title = 'Sub-Total'.tr();
       content =
-          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     } else if (type == 6) {
       title = 'Shipping Fee'.tr();
       content =
-          '${m?.card_shipping_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.card_shipping_fee_unit}';
+          '${m?.card_shipping_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     } else if (type == 7) {
       title = 'Pay'.tr();
       double fee = double.parse(m?.open_fee ?? "0") +
           double.parse(m?.card_shipping_fee ?? "0");
+      if (presenter.card.service == 3) {
+        fee = double.parse(m?.open_fee ?? "0");
+      }
       content =
-          '${fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
+          '${fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
     }
     debugPrint("title is $title, content is $content");
     return Padding(
@@ -1053,7 +1066,11 @@ class ApplyView extends StatelessWidget {
                   var phone = _phoneController.text;
                   var errorStr = "";
                   if (AddressSingleton.shared.shippingDict == null) {
-                    errorStr = "Please enter shipping address".tr();
+                    if (presenter.card.service == 3) {
+                      errorStr = "";
+                    } else {
+                      errorStr = "Please enter shipping address".tr();
+                    }
                   } else if (AddressSingleton.shared.mailingDict == null) {
                     errorStr = "Please enter mailing address".tr();
                   } else if (AddressSingleton.shared.residentialDict == null) {
@@ -1078,7 +1095,22 @@ class ApplyView extends StatelessWidget {
                     "mailing_address": AddressSingleton.shared.mailingDict,
                     "residential_address":
                         AddressSingleton.shared.residentialDict,
+                    "service": presenter.card.service,
+                    "card_type": presenter.card.cardType,
+                    "currency": presenter.card.currency,
                   };
+                  if (presenter.card.service == 3) {
+                    //33虚拟不需要邮寄地址
+                    body = {
+                      "phone": phone,
+                      "mailing_address": AddressSingleton.shared.mailingDict,
+                      "residential_address":
+                          AddressSingleton.shared.residentialDict,
+                      "service": presenter.card.service,
+                      "card_type": presenter.card.cardType,
+                      "currency": presenter.card.currency,
+                    };
+                  }
                   presenter.payPressed(context, body);
                 },
                 child: Container(

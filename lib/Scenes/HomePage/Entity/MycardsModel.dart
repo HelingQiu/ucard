@@ -25,6 +25,16 @@ class MycardsModel {
   String img_card_bg;
   int service;
   String hold_status;
+  String unfreeze_fee;
+  String unfreeze_fee_unit;
+  String unlost_fee;
+  String unlost_fee_unit;
+  String mod_pin_fee;
+  String mod_pin_fee_unit;
+  String card_transfer_fee;
+  String card_transfer_fee_unit;
+  String currency;
+  String card_type_sub;
 
   // const STATUS_WA = 'WA';//审核中
   // const STATUS_P = 'P';//未制卡
@@ -37,7 +47,8 @@ class MycardsModel {
   // const STATUS_L = 'L';//正式掛失
   // const STATUS_R = 'R';//已退卡
 
-  MycardsModel(this.card_order,
+  MycardsModel(
+      this.card_order,
       this.card_type,
       this.level,
       this.level_str,
@@ -60,7 +71,17 @@ class MycardsModel {
       this.img_card_center,
       this.img_card_bg,
       this.service,
-      this.hold_status,);
+      this.hold_status,
+      this.unfreeze_fee,
+      this.unfreeze_fee_unit,
+      this.unlost_fee,
+      this.unlost_fee_unit,
+      this.mod_pin_fee,
+      this.mod_pin_fee_unit,
+      this.card_transfer_fee,
+      this.card_transfer_fee_unit,
+      this.currency,
+      this.card_type_sub);
 
   factory MycardsModel.parse(Map<String, dynamic> dic) {
     String card_order = dic["card_order"] ?? "";
@@ -113,6 +134,17 @@ class MycardsModel {
       service = ser;
     }
     String hold_status = dic["hold_status"] ?? "";
+    String unfreeze_fee = dic["unfreeze_fee"] ?? "";
+    ;
+    String unfreeze_fee_unit = dic["unfreeze_fee_unit"] ?? "";
+    String unlost_fee = dic["unlost_fee"] ?? "";
+    String unlost_fee_unit = dic["unlost_fee_unit"] ?? "";
+    String mod_pin_fee = dic["mod_pin_fee"] ?? "";
+    String mod_pin_fee_unit = dic["mod_pin_fee_unit"] ?? "";
+    String card_transfer_fee = dic["card_transfer_fee"] ?? "";
+    String card_transfer_fee_unit = dic["card_transfer_fee_unit"] ?? "";
+    String currency = dic["currency"] ?? "";
+    String card_type_sub = dic["card_type_sub"] ?? "";
 
     return MycardsModel(
       card_order,
@@ -139,6 +171,16 @@ class MycardsModel {
       img_card_bg,
       service,
       hold_status,
+      unlost_fee,
+      unlost_fee_unit,
+      unfreeze_fee_unit,
+      unfreeze_fee,
+      mod_pin_fee,
+      mod_pin_fee_unit,
+      card_transfer_fee,
+      card_transfer_fee_unit,
+      currency,
+      card_type_sub,
     );
   }
 }

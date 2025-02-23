@@ -28,62 +28,6 @@ class HomeInteractor {
     return [];
   }
 
-  //账单列表
-  Future<Map<String, dynamic>?> fetchSettlements(
-    String card_order,
-    String settle_date,
-    int currentPage,
-  ) async {
-    var result = await Api().post1(
-      "/api/card/settlements",
-      {
-        "lang": AppStatus.shared.lang,
-        "card_order": card_order,
-        "settle_date": settle_date,
-        "page": currentPage,
-        "pageSize": 10,
-      },
-      true,
-    );
-    debugPrint("settlements = $result");
-    var dic = json.decode(result);
-    if (dic != null) {
-      var code = dic["data"];
-      if (code != null) {
-        return code;
-      }
-    }
-    return null;
-  }
-
-  Future<Map<String, dynamic>?> downSettlements(
-    String card_order,
-    String settle_date,
-    int currentPage,
-  ) async {
-    var result = await Api().post1(
-      "/api/card/settlements",
-      {
-        "lang": AppStatus.shared.lang,
-        "card_order": card_order,
-        "settle_date": settle_date,
-        "down": 1,
-        "page": currentPage,
-        "pageSize": 10,
-      },
-      true,
-    );
-    debugPrint("settlements = $result");
-    var dic = json.decode(result);
-    if (dic != null) {
-      var code = dic["data"];
-      if (code != null) {
-        return code;
-      }
-    }
-    return null;
-  }
-
   //激活
   Future<Map<String, dynamic>?> activeCard(
     String card_order,
@@ -202,6 +146,26 @@ class HomeInteractor {
       true,
     );
     debugPrint("/card/modpin = $result");
+    var dic = json.decode(result);
+    return dic;
+  }
+
+  //卡卡转账
+  Future<Map<String, dynamic>?> transfer33Card(String card_order, String code,
+      String cardpin, String cardNo, String amount) async {
+    var result = await Api().post1(
+      "/api/card/transfer",
+      {
+        "lang": AppStatus.shared.lang,
+        "card_order": card_order,
+        "code": code,
+        "card_pin": cardpin,
+        "to_card_no": cardNo,
+        "money": amount,
+      },
+      true,
+    );
+    debugPrint("/card/transfer = $result");
     var dic = json.decode(result);
     return dic;
   }
