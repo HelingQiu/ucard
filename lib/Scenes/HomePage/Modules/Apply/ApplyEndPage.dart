@@ -70,7 +70,10 @@ class ApplyEndPageState extends State<ApplyEndPage> {
           color: theme == AppTheme.light
               ? AppStatus.shared.bgWhiteColor
               : AppStatus.shared.bgBlackColor,
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
           child: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -124,7 +127,10 @@ class ApplyEndPageState extends State<ApplyEndPage> {
                 cardBg,
                 fit: BoxFit.fill,
                 height: 190,
-                width: MediaQuery.of(context).size.width - 44,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width - 44,
               ),
               borderRadius: BorderRadius.circular(10),
             ),
@@ -160,9 +166,9 @@ class ApplyEndPageState extends State<ApplyEndPage> {
               top: 18,
             ),
             Positioned(
-              child: Image.asset(widget.cardType == 'master'
-                  ? A.assets_apply_master_card
-                  : A.assets_apply_visa_card),
+              child: Image.asset(widget.cardType == 'visa'
+                  ? A.assets_apply_visa_card
+                  : A.assets_apply_master_card),
               right: 20,
               bottom: 18,
             ),

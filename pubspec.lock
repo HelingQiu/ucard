@@ -438,6 +438,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.0-beta.2"
+  flutter_idensic_mobile_sdk_plugin:
+    dependency: "direct main"
+    description:
+      name: flutter_idensic_mobile_sdk_plugin
+      sha256: "209ac89d92d58e7a3d5e802ccac1bd14442f0da79724ebcbda5605540f82c4f7"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.34.3"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -642,14 +650,6 @@ packages:
     description:
       name: json_annotation
       sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.9.0"
-  jumio_mobile_sdk_flutter:
-    dependency: "direct main"
-    description:
-      name: jumio_mobile_sdk_flutter
-      sha256: "5de613db181ee2418fc595933423437d500b6b16c0301b9f3289daadf7bc907e"
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.9.0"

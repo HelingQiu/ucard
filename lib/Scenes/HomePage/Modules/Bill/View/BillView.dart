@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -81,7 +82,9 @@ class BillView extends StatelessWidget {
     String dateTime = dateFormat.format(presenter.selectTime);
     return Card(
       margin: const EdgeInsets.all(16),
-      color: Color(0xff232323),
+      color: _theme == AppTheme.light
+          ? AppStatus.shared.textGreyColor
+          : Color(0xff232323),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -93,7 +96,11 @@ class BillView extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  presenter.model.card_type == 'master' ? "Master" : "VISA",
+                  presenter.model.card_type == 'master'
+                      ? "Master"
+                      : presenter.model.card_type == 'visa'
+                          ? "VISA"
+                          : "UnionPay",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -102,7 +109,7 @@ class BillView extends StatelessWidget {
                 ),
                 const SizedBox(width: 20),
                 Text(
-                  AppStatus.shared.meet4AddBlank(cardNo),
+                  AppStatus.shared.meet4AddBlankAndHide(cardNo),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -121,7 +128,9 @@ class BillView extends StatelessWidget {
                 width: 200,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(32)),
-                  color: Color(0xff232323),
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgDarkGreyColor
+                      : Color(0xff232323),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
@@ -131,7 +140,9 @@ class BillView extends StatelessWidget {
                       Text(
                         dateTime,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: _theme == AppTheme.light
+                              ? AppStatus.shared.bgWhiteColor
+                              : Colors.white,
                           fontSize: 16,
                         ),
                       ),
@@ -148,14 +159,6 @@ class BillView extends StatelessWidget {
   }
 
   Widget _buildTransactionList() {
-    final transactions = List.generate(
-        3,
-        (index) => _TransactionItem(
-              type: 'FEE',
-              amount: -10.00,
-              time: '2022-06-08 20:01:01',
-            ));
-
     return EasyRefresh(
       header: MaterialHeader(),
       footer: MaterialFooter(),
@@ -177,27 +180,22 @@ class BillView extends StatelessWidget {
             var billAmt = "";
             var transAmt = "";
             var rightContent = "";
-            if (item.isCredit == "1") {
-              //@account
-              if (UserInfo.shared.email == AppStatus.shared.specialAccount) {
-                billAmt = "+${item.billCurrencyAmt} USD";
-                transAmt = "+${item.transCurrencyAmt} USD";
-              } else {
-                billAmt = "+${item.billCurrencyAmt} ${item.billCurrency}";
-                transAmt = "+${item.transCurrencyAmt} ${item.transCurrency}";
-              }
-              rightContent = "Permission".tr();
-            } else {
-              //@account
-              if (UserInfo.shared.email == AppStatus.shared.specialAccount) {
-                billAmt = "-${item.billCurrencyAmt} USD";
-                transAmt = "-${item.transCurrencyAmt} USD";
-              } else {
-                billAmt = "-${item.billCurrencyAmt} ${item.billCurrency}";
-                transAmt = "-${item.transCurrencyAmt} ${item.transCurrency}";
-              }
 
-              rightContent = "Consumption".tr();
+            if (UserInfo.shared.email == AppStatus.shared.specialAccount) {
+              billAmt = "${item.billCurrencyAmt} USD";
+              transAmt = "${item.transCurrencyAmt} USD";
+            } else {
+              billAmt = "${item.billCurrencyAmt} ${item.billCurrency}";
+              transAmt = "${item.transCurrencyAmt} ${item.transCurrency}";
+            }
+            if (item.transDescription.isNotEmpty) {
+              rightContent = item.transDescription;
+            } else {
+              if (item.isCredit == "1") {
+                rightContent = "Permission".tr();
+              } else {
+                rightContent = "Consumption".tr();
+              }
             }
             double bot =
                 (presenter.settleMentList.length == index - 1) ? 20.0 : 0.0;
@@ -205,7 +203,9 @@ class BillView extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               title: Card(
                 // margin: const EdgeInsets.all(16),
-                color: Color(0xff232323),
+                color: _theme == AppTheme.light
+                    ? AppStatus.shared.textGreyColor
+                    : Color(0xff232323),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -214,45 +214,59 @@ class BillView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.merchantName,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.merchantName,
+                              style: TextStyle(
+                                color: _theme == AppTheme.light
+                                    ? AppStatus.shared.bgWhiteColor
+                                    : AppStatus.shared.bgWhiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          Text(
-                            billAmt,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                            Text(
+                              billAmt,
+                              style: TextStyle(
+                                color: _theme == AppTheme.light
+                                    ? AppStatus.shared.bgWhiteColor
+                                    : AppStatus.shared.bgWhiteColor,
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
-                          Text(
-                            transAmt,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
+                            Text(
+                              transAmt,
+                              style: TextStyle(
+                                color: _theme == AppTheme.light
+                                    ? AppStatus.shared.bgWhiteColor
+                                    : Colors.grey[600],
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             rightContent,
                             style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
+                              color: _theme == AppTheme.light
+                                  ? AppStatus.shared.bgWhiteColor
+                                  : Colors.white,
+                              fontSize: 16,
                             ),
                           ),
                           Text(
                             item.settleDate,
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: _theme == AppTheme.light
+                                  ? AppStatus.shared.bgWhiteColor
+                                  : Colors.grey[600],
                               fontSize: 12,
                             ),
                           ),

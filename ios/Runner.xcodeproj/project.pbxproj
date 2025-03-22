@@ -16,11 +16,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		D59544DA2BF0F0FF003F6F53 /* Localizable-Jumio.strings in Resources */ = {isa = PBXBuildFile; fileRef = D59544D52BF0F0FF003F6F53 /* Localizable-Jumio.strings */; };
-		D59544DB2BF0F0FF003F6F53 /* Localizable-Jumio.strings in Resources */ = {isa = PBXBuildFile; fileRef = D59544D82BF0F0FF003F6F53 /* Localizable-Jumio.strings */; };
 		D59544DD2BF0F17F003F6F53 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D59544DC2BF0F17F003F6F53 /* GoogleService-Info.plist */; };
-		D59544E02BF0F65F003F6F53 /* JumioDatadog.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D59544DF2BF0F65F003F6F53 /* JumioDatadog.xcframework */; };
-		D59544E52BF66242003F6F53 /* Localizable-Jumio.strings in Resources */ = {isa = PBXBuildFile; fileRef = D59544E32BF66242003F6F53 /* Localizable-Jumio.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,12 +52,9 @@
 		CB025E93E1DF285DC89AB13D /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		D50BB3ED375DE2D42F2D7F7D /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D55E0FFD2C188C0B006EFE0C /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = Base.lproj/Info.plist; sourceTree = "<group>"; };
-		D59544D62BF0F0FF003F6F53 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "Localizable-Jumio.strings"; sourceTree = "<group>"; };
-		D59544D92BF0F0FF003F6F53 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "Localizable-Jumio.strings"; sourceTree = "<group>"; };
 		D59544DC2BF0F17F003F6F53 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D59544DE2BF0F19C003F6F53 /* Runner.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		D59544DF2BF0F65F003F6F53 /* JumioDatadog.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:2MS98UEUJQ:Jumio Corporation"; lastKnownFileType = wrapper.xcframework; name = JumioDatadog.xcframework; path = Pods/Jumio/JumioDatadog.xcframework; sourceTree = "<group>"; };
-		D59544E42BF66242003F6F53 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = "Localizable-Jumio.strings"; sourceTree = "<group>"; };
 		E22930EF1E6CCBFA848ED2F5 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,7 +64,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F651B1D30E28FBF62676524 /* Pods_Runner.framework in Frameworks */,
-				D59544E02BF0F65F003F6F53 /* JumioDatadog.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,9 +131,6 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				D59544E22BF66242003F6F53 /* en.lproj */,
-				D59544D42BF0F0FF003F6F53 /* zh-Hans.lproj */,
-				D59544D72BF0F0FF003F6F53 /* zh-Hant.lproj */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -168,31 +157,6 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		D59544D42BF0F0FF003F6F53 /* zh-Hans.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				D59544D52BF0F0FF003F6F53 /* Localizable-Jumio.strings */,
-			);
-			path = "zh-Hans.lproj";
-			sourceTree = "<group>";
-		};
-		D59544D72BF0F0FF003F6F53 /* zh-Hant.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				D59544D82BF0F0FF003F6F53 /* Localizable-Jumio.strings */,
-			);
-			path = "zh-Hant.lproj";
-			sourceTree = "<group>";
-		};
-		D59544E22BF66242003F6F53 /* en.lproj */ = {
-			isa = PBXGroup;
-			children = (
-				D59544E32BF66242003F6F53 /* Localizable-Jumio.strings */,
-			);
-			name = en.lproj;
-			path = Pods/Jumio/Localization/en.lproj;
-			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -291,11 +255,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D59544DB2BF0F0FF003F6F53 /* Localizable-Jumio.strings in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
-				D59544DA2BF0F0FF003F6F53 /* Localizable-Jumio.strings in Resources */,
-				D59544E52BF66242003F6F53 /* Localizable-Jumio.strings in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				D59544DD2BF0F17F003F6F53 /* GoogleService-Info.plist in Resources */,
@@ -469,30 +430,6 @@
 			name = Info.plist;
 			sourceTree = "<group>";
 		};
-		D59544D52BF0F0FF003F6F53 /* Localizable-Jumio.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D59544D62BF0F0FF003F6F53 /* zh-Hans */,
-			);
-			name = "Localizable-Jumio.strings";
-			sourceTree = "<group>";
-		};
-		D59544D82BF0F0FF003F6F53 /* Localizable-Jumio.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D59544D92BF0F0FF003F6F53 /* zh-Hant */,
-			);
-			name = "Localizable-Jumio.strings";
-			sourceTree = "<group>";
-		};
-		D59544E32BF66242003F6F53 /* Localizable-Jumio.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D59544E42BF66242003F6F53 /* en */,
-			);
-			name = "Localizable-Jumio.strings";
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -552,7 +489,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Z3GWNQ8T9H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -737,7 +674,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Z3GWNQ8T9H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -766,7 +703,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = Z3GWNQ8T9H;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;

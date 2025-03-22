@@ -169,4 +169,23 @@ class HomeInteractor {
     var dic = json.decode(result);
     return dic;
   }
+
+  //显示卡号
+  Future<Map<String, dynamic>?> cardDetail33(
+    String card_order,
+    String safepin,
+  ) async {
+    var result = await Api().post1(
+      "/api/card/cardDetail33",
+      {
+        "lang": AppStatus.shared.lang,
+        "card_order": card_order,
+        "safepin": safepin,
+      },
+      true,
+    );
+    debugPrint("/card/cardDetail33 = $result");
+    var dic = json.decode(result);
+    return dic;
+  }
 }

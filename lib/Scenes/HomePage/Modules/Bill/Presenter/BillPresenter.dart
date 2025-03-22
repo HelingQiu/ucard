@@ -37,8 +37,8 @@ class BillPresenter {
     int currentPage,
   ) async {
     await UserInfo.shared;
-    var body =
-        await interactor.fetchSettlements(card_order, settle_date, currentPage);
+    var body = await interactor.fetchSettlements(
+        card_order, settle_date, currentPage, model.service);
     if (currentPage == 1) {
       settleMentList.clear();
     }

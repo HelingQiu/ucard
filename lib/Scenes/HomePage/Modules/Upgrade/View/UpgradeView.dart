@@ -188,10 +188,12 @@ class UpgradeView extends StatelessWidget {
                       //   top: 18,
                       // ),
                       Positioned(
-                        child: Image.asset(
-                            presenter.cardModel.card_type == 'master'
-                                ? A.assets_home_master_icon2
-                                : A.assets_home_visa_icon2),
+                        child:
+                            Image.asset(presenter.cardModel.card_type == 'visa'
+                                ? A.assets_home_visa_icon2
+                                : presenter.cardModel.card_type == 'master'
+                                    ? A.assets_home_master_icon2
+                                    : A.assets_union_card),
                         right: 20,
                         bottom: 18,
                       ),

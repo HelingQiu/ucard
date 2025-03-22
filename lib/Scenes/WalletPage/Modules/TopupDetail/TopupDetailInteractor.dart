@@ -12,9 +12,12 @@ class TopupDetailInteractor {
   TopupDetailPresenter? presenter;
 
   //卡充值
-  Future<CardRechargeDetailModel?> fetchCardchargeinfo(int id) async {
-    var result = await Api().post("/api/user/cardchargeinfo",
-        {"id": id, "lang": AppStatus.shared.lang}, true);
+  Future<CardRechargeDetailModel?> fetchCardchargeinfo(
+      int id, int cardSource) async {
+    var result = await Api().post(
+        "/api/user/cardchargeinfo",
+        {"id": id, "lang": AppStatus.shared.lang, "card_source": cardSource},
+        true);
     debugPrint("fetchCardchargeinfo = $result");
     var dic = json.decode(result);
     if (dic != null) {
@@ -31,5 +34,4 @@ class TopupDetailInteractor {
     }
     return null;
   }
-
 }

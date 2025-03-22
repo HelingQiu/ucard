@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:flutter_idensic_mobile_sdk_plugin/flutter_idensic_mobile_sdk_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:easy_localization/easy_localization.dart';
@@ -18,6 +19,7 @@ import 'package:ucardtemp/Data/UserInfo.dart';
 
 import '../../../Common/Notification.dart';
 import '../../../Common/NumberPlus.dart';
+import '../../../Common/ShowMessage.dart';
 import '../../../Common/StreamCenter.dart';
 import '../../../Data/AppStatus.dart';
 import '../../../gen_a/A.dart';
@@ -32,7 +34,7 @@ class MineView extends StatelessWidget {
 
   final SignatureController _controller = SignatureController(
     penStrokeWidth: 5,
-    penColor: Colors.red,
+    penColor: Colors.black,
   );
 
   MineView(this.presenter);
@@ -212,18 +214,30 @@ class MineView extends StatelessWidget {
   //general
   Widget _buildGeneralView(BuildContext context) {
     presenter.getLangData(context);
-    String kycStatus = UserInfo.shared.isKycVerified == 1
-        ? "Verified".tr()
-        : (UserInfo.shared.isKycVerified == 2
-            ? "Verifying".tr()
-            : (UserInfo.shared.isKycVerified == 3
-                ? "Verify fail".tr()
-                : "Not Verified".tr()));
-    bool showKyc = (UserInfo.shared.isKycVerified == 1 ||
-            UserInfo.shared.isKycVerified == 2 ||
-            UserInfo.shared.isKycVerified == 3)
-        ? false
-        : true;
+    String kycStatus = "";
+    bool showKyc = false;
+    debugPrint(
+        "key is ========${UserInfo.shared.isKycVerified}=======${UserInfo.shared.isSign}");
+    if (UserInfo.shared.isKycVerified == 1 && UserInfo.shared.isSign == 3) {
+      kycStatus = "Verified".tr();
+      showKyc = false;
+    } else {
+      kycStatus = "Not Verified".tr();
+      showKyc = true;
+    }
+
+    // String kycStatus = UserInfo.shared.isKycVerified == 1
+    //     ? "Verified".tr()
+    //     : (UserInfo.shared.isKycVerified == 2
+    //         ? "Verifying".tr()
+    //         : (UserInfo.shared.isKycVerified == 3
+    //             ? "Verify fail".tr()
+    //             : "Not Verified".tr()));
+    // bool showKyc = (UserInfo.shared.isKycVerified == 1 ||
+    //         UserInfo.shared.isKycVerified == 2 ||
+    //         UserInfo.shared.isKycVerified == 3)
+    //     ? false
+    //     : true;
     return Padding(
       padding: EdgeInsets.only(top: 20, left: 16, right: 16),
       child: Column(
@@ -532,7 +546,7 @@ class MineView extends StatelessWidget {
               builder: (BuildContext context1, StateSetter mystate) {
             return StreamBuilder<int>(
                 stream: null,
-                builder: (context, snapshot) {
+                builder: (context3, snapshot) {
                   return Container(
                     decoration: BoxDecoration(
                         color: _theme == AppTheme.light
@@ -550,9 +564,17 @@ class MineView extends StatelessWidget {
                             height: 20,
                           ),
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
+                              if (UserInfo.shared.isKycVerified == 1) {
+                                showTopError(context, "Verified");
+                                return;
+                              } else if (UserInfo.shared.isKycVerified == 2) {
+                                showTopError(context, "Verifying");
+                                return;
+                              }
                               Navigator.pop(context);
-                              presenter.showKycPage(context);
+                              // presenter.showKycPage(context);
+                              launchSDK();
                             },
                             child: Container(
                               width: double.infinity,
@@ -582,6 +604,13 @@ class MineView extends StatelessWidget {
                           ),
                           InkWell(
                             onTap: () {
+                              if (UserInfo.shared.isSign == 3) {
+                                showTopError(context, "Signature completed");
+                                return;
+                              } else if (UserInfo.shared.isSign == 1) {
+                                showTopError(context, "Under review");
+                                return;
+                              }
                               Navigator.pop(context);
                               showSignView(context);
                             },
@@ -628,7 +657,7 @@ class MineView extends StatelessWidget {
               builder: (BuildContext context1, StateSetter mystate) {
             return StreamBuilder<int>(
                 stream: null,
-                builder: (context, snapshot) {
+                builder: (context3, snapshot) {
                   return Container(
                     decoration: BoxDecoration(
                         color: _theme == AppTheme.light
@@ -696,51 +725,25 @@ class MineView extends StatelessWidget {
                               Expanded(
                                 child: InkWell(
                                   onTap: () async {
-                                    //
-                                    // Uint8List? signatureBytes =
-                                    //     await _controller.toPngBytes();
-                                    // // debugPrint("data is ${signatureBytes}");
-                                    // if (signatureBytes != null) {
-                                    //   String base64Image =
-                                    //       base64Encode(signatureBytes);
-                                    //   // 上传 base64Image
-                                    //   debugPrint(
-                                    //       "base64 is $base64Image -----hello");
-                                    // }
-
-                                    // final ByteData byteData = await rootBundle
-                                    //     .load("assets/test_pic.jpg");
-                                    // final Uint8List bytes =
-                                    //     byteData.buffer.asUint8List();
-                                    //
-                                    // // 转换为 Base64 字符串
-                                    // String base64String = base64Encode(bytes);
-
-                                    // 1. 加载资源文件为字节数据
-                                    final ByteData byteData = await rootBundle
-                                        .load("assets/test_pic.jpg");
-                                    final Uint8List bytes =
-                                        byteData.buffer.asUint8List();
-
-                                    // 2. 获取设备本地目录（临时目录或文档目录）
-                                    final Directory tempDir =
-                                        await getTemporaryDirectory();
-                                    // 或使用应用文档目录：
-                                    // final Directory appDocDir = await getApplicationDocumentsDirectory();
-
-                                    // 3. 生成本地文件名（保持原文件名）
-                                    final String fileName =
-                                        path.basename("assets/test_pic.jpg");
-                                    final File localFile =
-                                        File('${tempDir.path}/$fileName');
-                                    await localFile.writeAsBytes(bytes);
-
-                                    Uint8List imageBytes =
-                                        await localFile.readAsBytes();
-                                    String base64 = base64Encode(imageBytes);
-
-                                    debugPrint(
-                                        "base64111 is $base64 -----hello");
+                                    Uint8List? signatureBytes =
+                                        await _controller.toPngBytes();
+                                    if (signatureBytes != null) {
+                                      String base64Image =
+                                          base64Encode(signatureBytes);
+                                      String uploadStr =
+                                          "data:images/jpeg;base64,$base64Image";
+                                      Map result = await presenter
+                                          .uploadSignCall(context, uploadStr);
+                                      if (result["code"] == 200) {
+                                        UserInfo.shared.isSign = 1;
+                                        StreamCenter
+                                            .shared.profileStreamController
+                                            .add(0);
+                                        Navigator.pop(context);
+                                      } else {
+                                        showTopError(context, result["msg"]);
+                                      }
+                                    }
                                   },
                                   child: Container(
                                     width: double.infinity,
@@ -775,5 +778,50 @@ class MineView extends StatelessWidget {
         _controller.clear();
       }
     });
+  }
+
+  showTopError(BuildContext context, String err) {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return ShowMessage(2, err.tr(), styleType: 1, width: 257);
+        });
+  }
+
+  //kyc
+  void launchSDK() async {
+    String token = await presenter.getKycToken();
+    final String accessToken = token;
+    final onTokenExpiration = () async {
+      // call your backend to fetch a new access token (this is just an example)
+      return Future<String>.delayed(Duration(seconds: 2), () => token);
+    };
+
+    final SNSStatusChangedHandler onStatusChanged =
+        (SNSMobileSDKStatus newStatus, SNSMobileSDKStatus prevStatus) {
+      print("The SDK status was changed: $prevStatus -> $newStatus");
+    };
+
+    final snsMobileSDK = SNSMobileSDK.init(accessToken, onTokenExpiration)
+        .withHandlers(
+          // optional handlers
+          onStatusChanged: onStatusChanged,
+        )
+        .withDebug(true) // set debug mode if required
+        .withLocale(Locale(AppStatus.shared.lang == "EN"
+            ? "en"
+            : AppStatus.shared.lang == "zh-CN"
+                ? "zh-CN"
+                : "zh-TW")) // optional, for cases when you need to override the system locale
+        .build();
+
+    snsMobileSDK.launch().then((result) {
+      print("Completed with result: $result");
+      LoginCenter().fetchUserInfo();
+    }).catchError((error) {
+      print("Error launching SDK: $error");
+    });
+
+    // print("Completed with result: $result");
   }
 }

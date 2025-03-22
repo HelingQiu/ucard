@@ -60,6 +60,7 @@ class TopupPresenter {
     var result = await interactor.fetchPhycialData();
     debugPrint('PhysicalCardConfigsData $result');
     cardInfoModel = result;
+    view?.streamController.add(0);
   }
 
   //获取钱包余额

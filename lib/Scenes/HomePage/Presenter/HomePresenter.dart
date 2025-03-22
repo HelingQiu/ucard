@@ -28,6 +28,7 @@ class HomePresenter {
   WalletModel? walletModel;
 
   bool showCardNum = false;
+  Card33InfoModel? card33Model;
 
   HomePresenter(this.interactor, this.router) {
     // fetchMycardsList();
@@ -206,5 +207,20 @@ class HomePresenter {
     var body = await interactor.transfer33Card(
         card_order, code, cardpin, cardNo, amount);
     return {"code": body?["status_code"], "msg": body?["message"] ?? ""};
+  }
+
+  //显示卡号
+  Future<Map> showCardDetail33(String card_order, String safepin) async {
+    var body = await interactor.cardDetail33(card_order, safepin);
+
+    return {
+      "code": body?["status_code"],
+      "msg": body?["message"] ?? "",
+      "data": body?["data"]
+    };
+  }
+
+  toSafetyPinPage(BuildContext context) {
+    router.showSafePin(context);
   }
 }

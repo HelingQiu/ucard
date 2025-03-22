@@ -22,8 +22,12 @@
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
                                 <rect key="frame" x="196.33333333333334" y="426" width="0.33333333333334281" height="0.33333333333331439"/>
                             </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Group_1000000919" translatesAutoresizingMaskIntoConstraints="NO" id="O58-If-VAJ">
-                                <rect key="frame" x="115.66666666666669" y="394" width="162" height="64"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="O58-If-VAJ">
+                                <rect key="frame" x="156.66666666666669" y="386" width="80" height="80"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="1nW-dR-OXG"/>
+                                    <constraint firstAttribute="height" constant="80" id="P6e-CC-SzX"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.070588235294117646" green="0.070588235294117646" blue="0.070588235294117646" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -41,7 +45,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Group_1000000919" width="161.33332824707031" height="64"/>
         <image name="LaunchImage" width="0.3333333432674408" height="0.3333333432674408"/>
+        <image name="logo" width="1024" height="1024"/>
     </resources>
 </document>

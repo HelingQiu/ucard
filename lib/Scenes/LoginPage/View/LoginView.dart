@@ -39,6 +39,7 @@ class LoginView extends StatelessWidget {
   LoginView(this.presenter) {
     debugPrint('Login view init');
   }
+
   String inputTip = "";
   OverlayEntry textFormOverlayEntry = new OverlayEntry(
     builder: (context) {
@@ -184,15 +185,24 @@ class LoginView extends StatelessWidget {
         child: Column(
           children: [
             Spacer(),
-            Image.asset(_theme == AppTheme.light
-                ? A.assets_login_logo_black
-                : A.assets_login_logo),
+            Text(
+              "UOK",
+              style: TextStyle(
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgBlackColor
+                      : AppStatus.shared.bgWhiteColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 40),
+            ),
+            // Image.asset(_theme == AppTheme.light
+            //     ? A.assets_login_logo_black
+            //     : A.assets_login_logo),
             Container(
               height: 12,
             ),
-            Visibility(
-                visible: _theme != AppTheme.light,
-                child: Image.asset(A.assets_login_logo_name)),
+            // Visibility(
+            //     visible: _theme != AppTheme.light,
+            //     child: Image.asset(A.assets_login_logo_name)),
             Spacer()
           ],
         ),

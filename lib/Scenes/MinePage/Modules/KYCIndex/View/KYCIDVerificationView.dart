@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:jumio_mobile_sdk_flutter/jumio_mobile_sdk_flutter.dart';
+
+// import 'package:jumio_mobile_sdk_flutter/jumio_mobile_sdk_flutter.dart';
 import '../../../../../Data/UserInfo.dart';
 
 class KYCIDVerificationView extends StatefulWidget {
@@ -41,6 +42,7 @@ class KYCIDVerificationViewState extends State<KYCIDVerificationView> {
       ),
     );
   }
+
   //
   // start() async {
   //   print("kyc start");
@@ -50,12 +52,12 @@ class KYCIDVerificationViewState extends State<KYCIDVerificationView> {
   // }
 
   Future<void> _start(BuildContext context, String authorizationToken) async {
-    await _logErrors(context, () async {
-      await Jumio.init(authorizationToken, "SG");
-      final result = await Jumio.start();
-      await _showDialogWithMessage(
-          "Jumio has completed. Result: $result", context);
-    });
+    // await _logErrors(context, () async {
+    //   await Jumio.init(authorizationToken, "SG");
+    //   final result = await Jumio.start();
+    //   await _showDialogWithMessage(
+    //       "Jumio has completed. Result: $result", context);
+    // });
   }
 
   Future<void> _logErrors(

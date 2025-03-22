@@ -151,7 +151,9 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                     margin: EdgeInsets.only(left: 16, right: 16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(40),
-                      color: Color(0xff232323),
+                      color: theme == AppTheme.light
+                          ? AppStatus.shared.textGreyColor
+                          : AppStatus.shared.bgBlackColor,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,7 +168,9 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(40),
                               color: selectIndex == 0
-                                  ? Color(0xff232323)
+                                  ? theme == AppTheme.light
+                                      ? AppStatus.shared.textGreyColor
+                                      : AppStatus.shared.bgBlackColor
                                   : Color(0xff2369FF),
                             ),
                             padding: EdgeInsets.only(left: 20, right: 20),
@@ -176,7 +180,10 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                                 SizedBox(
                                   width: 20,
                                 ),
-                                Text("Physical Card".tr()),
+                                Text(
+                                  "Physical Card".tr(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
@@ -192,7 +199,9 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                               borderRadius: BorderRadius.circular(40),
                               color: selectIndex == 0
                                   ? Color(0xff2369FF)
-                                  : Color(0xff232323),
+                                  : theme == AppTheme.light
+                                      ? AppStatus.shared.textGreyColor
+                                      : AppStatus.shared.bgBlackColor,
                             ),
                             padding: EdgeInsets.only(left: 20, right: 20),
                             child: Row(
@@ -201,7 +210,10 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                                 SizedBox(
                                   width: 20,
                                 ),
-                                Text("Virtual Card".tr()),
+                                Text(
+                                  "Virtual Card".tr(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
@@ -260,6 +272,20 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                             }
                             if (selectIndex == 0) {
                               if (element.service == 3) {
+                                if (element.exist == 1) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return ShowMessage(
+                                            2,
+                                            "There is already a card of the same type"
+                                                .tr(),
+                                            dismissSeconds: 2,
+                                            styleType: 1,
+                                            width: 257);
+                                      });
+                                  return;
+                                }
                                 showSafetyPinDiolog(context, element);
                               } else {
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -267,6 +293,20 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                                         ApplyBuilder(element).scene));
                               }
                             } else {
+                              if (element.exist == 1) {
+                                showDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return ShowMessage(
+                                          2,
+                                          "There is already a card of the same type"
+                                              .tr(),
+                                          dismissSeconds: 2,
+                                          styleType: 1,
+                                          width: 257);
+                                    });
+                                return;
+                              }
                               showSafetyPinDiolog(context, element);
                             }
                           },
@@ -274,7 +314,9 @@ class ApplyStartPageState extends State<ApplyStartPage> {
                               context,
                               element.cardType == 'visa'
                                   ? A.assets_apply_visa_logo1
-                                  : A.assets_apply_master_card,
+                                  : element.cardType == "master"
+                                      ? A.assets_apply_master_card
+                                      : A.assets_union_card,
                               element.cardType == 'visa'
                                   ? 'Visa(${element.currency})'
                                   : element.cardType == 'master'

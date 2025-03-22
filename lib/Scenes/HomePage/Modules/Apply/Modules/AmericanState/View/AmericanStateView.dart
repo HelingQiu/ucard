@@ -136,7 +136,7 @@ class AmericanStateView extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "${presenter.isCountryCode ? tempModel.countryname : tempModel.title}",
+                                        "${presenter.isCountryCode ? "${tempModel.countryname}（${tempModel.code}）" : tempModel.title}",
                                         style: TextStyle(
                                             color: theme == AppTheme.light
                                                 ? AppStatus.shared.bgBlackColor
@@ -145,7 +145,7 @@ class AmericanStateView extends StatelessWidget {
                                       ),
                                       Spacer(),
                                       Text(
-                                        "${presenter.isCountryCode ? tempModel.interarea : tempModel.jx}",
+                                        "${presenter.isCountryCode ? "+${tempModel.interarea}" : tempModel.jx}",
                                         textAlign: TextAlign.right,
                                         style: TextStyle(
                                             color: theme == AppTheme.light

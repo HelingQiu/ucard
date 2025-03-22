@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:ucardtemp/Data/UserInfo.dart';
 import 'package:ucardtemp/Scenes/MinePage/Modules/HelpCenter/HelpCenterDetail.dart';
 import '../../../../Common/AgreementPage.dart';
@@ -33,6 +34,11 @@ class HelpCenterPageState extends State<HelpCenterPage> {
 
   @override
   Widget build(BuildContext context) {
+    String path = AppStatus.shared.lang == "EN"
+        ? "https://uok5217.zendesk.com/hc/en-gb"
+        : AppStatus.shared.lang == "zh-CN"
+            ? "https://uok5217.zendesk.com/hc/zh-cn"
+            : "https://uok5217.zendesk.com/hc/zh-tw";
     return BlocBuilder<ThemeCubit, AppTheme>(builder: (context, theme) {
       _theme = theme;
       return Scaffold(
@@ -62,61 +68,64 @@ class HelpCenterPageState extends State<HelpCenterPage> {
           color: theme == AppTheme.light
               ? AppStatus.shared.bgWhiteColor
               : AppStatus.shared.bgBlackColor,
-          child: Column(
-            children: [
-              AccountInfo(context),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: faqList.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    height: 48,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AgreementPage(
-                                faqList[index]["title"],
-                                faqList[index]["href"]),
-                          ),
-                        );
-                      },
-                      behavior: HitTestBehavior.opaque,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 15, right: 15),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 48,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      faqList[index]['title'],
-                                      style: TextStyle(
-                                        color: theme == AppTheme.light
-                                            ? AppStatus.shared.bgBlackColor
-                                            : AppStatus.shared.bgWhiteColor,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.grey,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+          child: InAppWebView(
+            initialUrlRequest: URLRequest(url: Uri.parse(path)),
           ),
+          // child: Column(
+          //   children: [
+          //     AccountInfo(context),
+          //     ListView.builder(
+          //       shrinkWrap: true,
+          //       itemCount: faqList.length,
+          //       itemBuilder: (context, index) {
+          //         return Container(
+          //           height: 48,
+          //           child: GestureDetector(
+          //             onTap: () {
+          //               Navigator.of(context).push(
+          //                 MaterialPageRoute(
+          //                   builder: (context) => AgreementPage(
+          //                       faqList[index]["title"],
+          //                       faqList[index]["href"]),
+          //                 ),
+          //               );
+          //             },
+          //             behavior: HitTestBehavior.opaque,
+          //             child: Padding(
+          //               padding: EdgeInsets.only(left: 15, right: 15),
+          //               child: Column(
+          //                 children: [
+          //                   Container(
+          //                     height: 48,
+          //                     child: Row(
+          //                       children: [
+          //                         Expanded(
+          //                           child: Text(
+          //                             faqList[index]['title'],
+          //                             style: TextStyle(
+          //                               color: theme == AppTheme.light
+          //                                   ? AppStatus.shared.bgBlackColor
+          //                                   : AppStatus.shared.bgWhiteColor,
+          //                               fontSize: 14,
+          //                             ),
+          //                           ),
+          //                         ),
+          //                         Icon(
+          //                           Icons.chevron_right,
+          //                           color: Colors.grey,
+          //                         )
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ),
+          //         );
+          //       },
+          //     ),
+          //   ],
+          // ),
         ),
       );
     });

@@ -66,9 +66,11 @@ class AdPageState extends State<AdPage> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Center(
-                  child: Image.asset(theme == AppTheme.light
-                      ? A.assets_login_logo_black
-                      : A.assets_ucard_start_logo),
+                  child: Image.asset(
+                    A.assets_logo_logo_new,
+                    width: 80,
+                    height: 80,
+                  ),
                 ),
                 // child: CachedNetworkImage(
                 //   imageUrl: AppStatus.shared.launchAdImageUrl,

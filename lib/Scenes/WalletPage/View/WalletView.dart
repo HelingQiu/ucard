@@ -116,7 +116,9 @@ class WalletView extends StatelessWidget {
   //顶部
   Widget _buildTopView(BuildContext context) {
     String amout =
-        "${presenter.walletModel?.balance ?? "0.0"} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.walletModel?.currency ?? "USDT"}";
+        "${presenter.walletModel?.balance ?? "0.0"} ${(UserInfo.shared.email ==
+        AppStatus.shared.specialAccount) ? "USD" : presenter.walletModel
+        ?.currency ?? "USDT"}";
     return Container(
       height: (presenter.walletList.length == 1) ? 120 : 200,
       child: Padding(
@@ -150,18 +152,18 @@ class WalletView extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             UserInfo.shared.hideBalance =
-                                !UserInfo.shared.hideBalance;
+                            !UserInfo.shared.hideBalance;
                             UserInfo.shared.saveHideBalance();
                             StreamCenter.shared.myWalletStreamController.add(0);
                           },
                           child: Container(
                             child: Image.asset(UserInfo.shared.hideBalance
                                 ? _theme == AppTheme.light
-                                    ? A.assets_unvisible_black
-                                    : A.assets_wallet_visible_close
+                                ? A.assets_unvisible_black
+                                : A.assets_wallet_visible_close
                                 : _theme == AppTheme.light
-                                    ? A.assets_visible_black
-                                    : A.assets_wallet_visible_open),
+                                ? A.assets_visible_black
+                                : A.assets_wallet_visible_open),
                           ),
                         ),
                       ],
@@ -173,16 +175,15 @@ class WalletView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     WalletModel model = presenter.walletList[index];
                     var showAmount = "${model.balance}${model.currency}";
-                    if(UserInfo.shared.email == AppStatus.shared.specialAccount) {
+                    if (UserInfo.shared.email ==
+                        AppStatus.shared.specialAccount) {
                       showAmount = "${model.balance} USD";
                     }
                     return Padding(
                       padding: EdgeInsets.only(top: 5),
                       child: Center(
                         child: Text(
-                          (UserInfo.shared.hideBalance
-                              ? "***"
-                              : showAmount),
+                          (UserInfo.shared.hideBalance ? "***" : showAmount),
                           style: TextStyle(
                               color: _theme == AppTheme.light
                                   ? AppStatus.shared.bgBlackColor
@@ -194,7 +195,7 @@ class WalletView extends StatelessWidget {
                   }),
               Visibility(
                 visible:
-                    (UserInfo.shared.email != AppStatus.shared.specialAccount),
+                (UserInfo.shared.email != AppStatus.shared.specialAccount),
                 child: Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Row(
@@ -343,8 +344,8 @@ class WalletView extends StatelessWidget {
                         color: presenter.selectedType == 0
                             ? AppStatus.shared.bgBlueColor
                             : _theme == AppTheme.light
-                                ? AppStatus.shared.bgGreyLightColor
-                                : AppStatus.shared.bgDarkGreyColor,
+                            ? AppStatus.shared.bgGreyLightColor
+                            : AppStatus.shared.bgDarkGreyColor,
                         borderRadius: BorderRadius.circular(13)),
                     child: Center(
                       child: Text(
@@ -353,8 +354,8 @@ class WalletView extends StatelessWidget {
                             fontSize: 12,
                             color: _theme == AppTheme.light
                                 ? presenter.selectedType == 0
-                                    ? AppStatus.shared.bgWhiteColor
-                                    : AppStatus.shared.bgBlackColor
+                                ? AppStatus.shared.bgWhiteColor
+                                : AppStatus.shared.bgBlackColor
                                 : AppStatus.shared.bgWhiteColor,
                             fontWeight: FontWeight.w500),
                       ),
@@ -364,7 +365,7 @@ class WalletView extends StatelessWidget {
               ),
               Visibility(
                 visible:
-                    (UserInfo.shared.email != AppStatus.shared.specialAccount),
+                (UserInfo.shared.email != AppStatus.shared.specialAccount),
                 child: SizedBox(
                   width: 12,
                 ),
@@ -385,8 +386,8 @@ class WalletView extends StatelessWidget {
                         color: presenter.selectedType == 1
                             ? AppStatus.shared.bgBlueColor
                             : _theme == AppTheme.light
-                                ? AppStatus.shared.bgGreyLightColor
-                                : AppStatus.shared.bgDarkGreyColor,
+                            ? AppStatus.shared.bgGreyLightColor
+                            : AppStatus.shared.bgDarkGreyColor,
                         borderRadius: BorderRadius.circular(13)),
                     child: Center(
                       child: Text(
@@ -395,8 +396,8 @@ class WalletView extends StatelessWidget {
                             fontSize: 12,
                             color: _theme == AppTheme.light
                                 ? presenter.selectedType == 1
-                                    ? AppStatus.shared.bgWhiteColor
-                                    : AppStatus.shared.bgBlackColor
+                                ? AppStatus.shared.bgWhiteColor
+                                : AppStatus.shared.bgBlackColor
                                 : AppStatus.shared.bgWhiteColor,
                             fontWeight: FontWeight.w500),
                       ),
@@ -406,7 +407,7 @@ class WalletView extends StatelessWidget {
               ),
               Visibility(
                 visible:
-                    (UserInfo.shared.email != AppStatus.shared.specialAccount),
+                (UserInfo.shared.email != AppStatus.shared.specialAccount),
                 child: SizedBox(
                   width: 12,
                 ),
@@ -424,8 +425,8 @@ class WalletView extends StatelessWidget {
                       color: presenter.selectedType == 2
                           ? AppStatus.shared.bgBlueColor
                           : _theme == AppTheme.light
-                              ? AppStatus.shared.bgGreyLightColor
-                              : AppStatus.shared.bgDarkGreyColor,
+                          ? AppStatus.shared.bgGreyLightColor
+                          : AppStatus.shared.bgDarkGreyColor,
                       borderRadius: BorderRadius.circular(13)),
                   child: Center(
                     child: Text(
@@ -434,8 +435,8 @@ class WalletView extends StatelessWidget {
                           fontSize: 12,
                           color: _theme == AppTheme.light
                               ? presenter.selectedType == 2
-                                  ? AppStatus.shared.bgWhiteColor
-                                  : AppStatus.shared.bgBlackColor
+                              ? AppStatus.shared.bgWhiteColor
+                              : AppStatus.shared.bgBlackColor
                               : AppStatus.shared.bgWhiteColor,
                           fontWeight: FontWeight.w500),
                     ),
@@ -444,7 +445,7 @@ class WalletView extends StatelessWidget {
               ),
               Visibility(
                 visible:
-                    (UserInfo.shared.email != AppStatus.shared.specialAccount),
+                (UserInfo.shared.email != AppStatus.shared.specialAccount),
                 child: SizedBox(
                   width: 12,
                 ),
@@ -462,8 +463,8 @@ class WalletView extends StatelessWidget {
                       color: presenter.selectedType == 3
                           ? AppStatus.shared.bgBlueColor
                           : _theme == AppTheme.light
-                              ? AppStatus.shared.bgGreyLightColor
-                              : AppStatus.shared.bgDarkGreyColor,
+                          ? AppStatus.shared.bgGreyLightColor
+                          : AppStatus.shared.bgDarkGreyColor,
                       borderRadius: BorderRadius.circular(13)),
                   child: Center(
                     child: Text(
@@ -472,8 +473,8 @@ class WalletView extends StatelessWidget {
                           fontSize: 12,
                           color: _theme == AppTheme.light
                               ? presenter.selectedType == 3
-                                  ? AppStatus.shared.bgWhiteColor
-                                  : AppStatus.shared.bgBlackColor
+                              ? AppStatus.shared.bgWhiteColor
+                              : AppStatus.shared.bgBlackColor
                               : AppStatus.shared.bgWhiteColor,
                           fontWeight: FontWeight.w500),
                     ),
@@ -541,7 +542,7 @@ class WalletView extends StatelessWidget {
                 title = presenter.depositRecords[index].status;
 
                 double moneynum =
-                    double.parse(presenter.depositRecords[index].money);
+                double.parse(presenter.depositRecords[index].money);
                 money = NumberPlus.displayNumber(moneynum, "") +
                     " " +
                     ((UserInfo.shared.email == AppStatus.shared.specialAccount)
@@ -554,7 +555,7 @@ class WalletView extends StatelessWidget {
                 imageName = A.assets_wallet_history_eth;
                 title = presenter.withdrawRecords[index].status;
                 double moneynum =
-                    double.parse(presenter.withdrawRecords[index].money);
+                double.parse(presenter.withdrawRecords[index].money);
                 money = NumberPlus.displayNumber(moneynum, "") +
                     " " +
                     ((UserInfo.shared.email == AppStatus.shared.specialAccount)
@@ -566,10 +567,12 @@ class WalletView extends StatelessWidget {
               } else if (presenter.selectedType == 2) {
                 imageName = A.assets_wallet_topup_icon;
                 title = presenter.cardRechargeRecords[index].card_no;
-                subTitle =
-                    presenter.cardRechargeRecords[index].card_type == "master"
-                        ? "Mastercard"
-                        : "Visa";
+                subTitle = presenter.cardRechargeRecords[index].card_type ==
+                    "master"
+                    ? "Mastercard"
+                    : presenter.cardRechargeRecords[index].card_type == "visa"
+                    ? "Visa"
+                    : "UnionPay";
                 money = presenter.cardRechargeRecords[index].money +
                     " " +
                     ((UserInfo.shared.email == AppStatus.shared.specialAccount)
@@ -598,7 +601,7 @@ class WalletView extends StatelessWidget {
                 imageName = A.assets_wallet_history_eth;
                 title = presenter.exchargeRecords[index].trans_code_str;
                 double moneynum =
-                    double.parse(presenter.exchargeRecords[index].money);
+                double.parse(presenter.exchargeRecords[index].money);
                 money = NumberPlus.displayNumber(moneynum, "") +
                     " " +
                     ((UserInfo.shared.email == AppStatus.shared.specialAccount)
@@ -622,7 +625,8 @@ class WalletView extends StatelessWidget {
                         presenter.withdrawRecords[index].transferId);
                   } else if (presenter.selectedType == 2) {
                     presenter.cardRechargeDetailPressed(context,
-                        presenter.cardRechargeRecords[index].rechargeId);
+                        presenter.cardRechargeRecords[index].rechargeId,
+                        presenter.cardRechargeRecords[index].card_source);
                   } else {}
                 },
                 child: Container(
@@ -760,85 +764,85 @@ class WalletView extends StatelessWidget {
         builder: (BuildContext context2) {
           return StatefulBuilder(
               builder: (BuildContext context1, StateSetter mystate) {
-            return Container(
-              decoration: BoxDecoration(
-                  color: _theme == AppTheme.light
-                      ? AppStatus.shared.bgWhiteColor
-                      : ColorsUtil.hexColor(0x2E2E2E),
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10))),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Text(
-                      "Select Currency Type".tr(),
-                      style: TextStyle(
-                          color: _theme == AppTheme.light
-                              ? AppStatus.shared.bgBlackColor
-                              : AppStatus.shared.bgWhiteColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    child: InkWell(
-                      onTap: () {
-                        if (type == 0) {
-                          print('ddddddd');
-                          presenter.depositPagePressed(context, 'USDT');
-                        } else {
-                          showSelectWithdrawMethodDiolog(context, 'USDT');
-                        }
-                      },
-                      child: Container(
-                        height: 44.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: AppStatus.shared.bgBlueColor,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(22))),
-                        child: Image.asset(
-                          A.assets_wallet_usdt,
-                          width: 83,
-                          height: 24,
-                          fit: BoxFit.scaleDown,
+                return Container(
+                  decoration: BoxDecoration(
+                      color: _theme == AppTheme.light
+                          ? AppStatus.shared.bgWhiteColor
+                          : ColorsUtil.hexColor(0x2E2E2E),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10))),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          "Select Currency Type".tr(),
+                          style: TextStyle(
+                              color: _theme == AppTheme.light
+                                  ? AppStatus.shared.bgBlackColor
+                                  : AppStatus.shared.bgWhiteColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
                         ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    child: InkWell(
-                      onTap: () {
-                        if (type == 0) {
-                          presenter.depositPagePressed(context, 'USDC');
-                        } else {
-                          showSelectWithdrawMethodDiolog(context, 'USDC');
-                        }
-                      },
-                      child: Container(
-                        height: 44.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: AppStatus.shared.bgBlueColor,
-                            borderRadius:
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                        child: InkWell(
+                          onTap: () {
+                            if (type == 0) {
+                              print('ddddddd');
+                              presenter.depositPagePressed(context, 'USDT');
+                            } else {
+                              showSelectWithdrawMethodDiolog(context, 'USDT');
+                            }
+                          },
+                          child: Container(
+                            height: 44.0,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: AppStatus.shared.bgBlueColor,
+                                borderRadius:
                                 BorderRadius.all(Radius.circular(22))),
-                        child: Image.asset(
-                          A.assets_wallet_usdc,
-                          width: 83,
-                          height: 24,
-                          fit: BoxFit.scaleDown,
+                            child: Image.asset(
+                              A.assets_wallet_usdt,
+                              width: 83,
+                              height: 24,
+                              fit: BoxFit.scaleDown,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                        child: InkWell(
+                          onTap: () {
+                            if (type == 0) {
+                              presenter.depositPagePressed(context, 'USDC');
+                            } else {
+                              showSelectWithdrawMethodDiolog(context, 'USDC');
+                            }
+                          },
+                          child: Container(
+                            height: 44.0,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: AppStatus.shared.bgBlueColor,
+                                borderRadius:
+                                BorderRadius.all(Radius.circular(22))),
+                            child: Image.asset(
+                              A.assets_wallet_usdc,
+                              width: 83,
+                              height: 24,
+                              fit: BoxFit.scaleDown,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          });
+                );
+              });
         }).whenComplete(() {});
   }
 
@@ -852,79 +856,79 @@ class WalletView extends StatelessWidget {
         builder: (BuildContext context2) {
           return StatefulBuilder(
               builder: (BuildContext context1, StateSetter mystate) {
-            return Container(
-              decoration: BoxDecoration(
-                  color: _theme == AppTheme.light
-                      ? AppStatus.shared.bgWhiteColor
-                      : ColorsUtil.hexColor(0x2E2E2E),
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10))),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 20),
-                    child: Text(
-                      "Select Withdraw Method".tr(),
-                      style: TextStyle(
-                          color: _theme == AppTheme.light
-                              ? AppStatus.shared.bgBlackColor
-                              : AppStatus.shared.bgWhiteColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    child: InkWell(
-                      onTap: () {
-                        presenter.withdrawPagePressed(context, currency, 0);
-                      },
-                      child: Container(
-                        height: 44.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: AppStatus.shared.bgBlueColor,
-                            borderRadius:
+                return Container(
+                  decoration: BoxDecoration(
+                      color: _theme == AppTheme.light
+                          ? AppStatus.shared.bgWhiteColor
+                          : ColorsUtil.hexColor(0x2E2E2E),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10))),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Text(
+                          "Select Withdraw Method".tr(),
+                          style: TextStyle(
+                              color: _theme == AppTheme.light
+                                  ? AppStatus.shared.bgBlackColor
+                                  : AppStatus.shared.bgWhiteColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                        child: InkWell(
+                          onTap: () {
+                            presenter.withdrawPagePressed(context, currency, 0);
+                          },
+                          child: Container(
+                            height: 44.0,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: AppStatus.shared.bgBlueColor,
+                                borderRadius:
                                 BorderRadius.all(Radius.circular(22))),
-                        child: Center(
-                          child: Text(
-                            'On-Chain Whtidrawal(BNB/ETH/Tron)'.tr(),
-                            style: TextStyle(
-                                color: AppStatus.shared.bgWhiteColor,
-                                fontSize: 16),
+                            child: Center(
+                              child: Text(
+                                'On-Chain Whtidrawal(BNB/ETH/Tron)'.tr(),
+                                style: TextStyle(
+                                    color: AppStatus.shared.bgWhiteColor,
+                                    fontSize: 16),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, left: 16, right: 16),
-                    child: InkWell(
-                      onTap: () {
-                        presenter.withdrawPagePressed(context, currency, 1);
-                      },
-                      child: Container(
-                          height: 44.0,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              color: AppStatus.shared.bgBlueColor,
-                              borderRadius:
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, left: 16, right: 16),
+                        child: InkWell(
+                          onTap: () {
+                            presenter.withdrawPagePressed(context, currency, 1);
+                          },
+                          child: Container(
+                              height: 44.0,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                  color: AppStatus.shared.bgBlueColor,
+                                  borderRadius:
                                   BorderRadius.all(Radius.circular(22))),
-                          child: Center(
-                            child: Text(
-                              'Ucard Transferral'.tr(),
-                              style: TextStyle(
-                                  color: AppStatus.shared.bgWhiteColor,
-                                  fontSize: 16),
-                            ),
-                          )),
-                    ),
+                              child: Center(
+                                child: Text(
+                                  'Ucard Transferral'.tr(),
+                                  style: TextStyle(
+                                      color: AppStatus.shared.bgWhiteColor,
+                                      fontSize: 16),
+                                ),
+                              )),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          });
+                );
+              });
         }).whenComplete(() {});
   }
 }

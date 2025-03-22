@@ -243,7 +243,8 @@ class WalletPresenter {
   }
 
   //卡充值详情
-  cardRechargeDetailPressed(BuildContext context, int transferId) {
-    router.showCardRechargeDetailPage(context, transferId);
+  cardRechargeDetailPressed(
+      BuildContext context, int transferId, int cardSource) {
+    router.showCardRechargeDetailPage(context, transferId, cardSource);
   }
 }

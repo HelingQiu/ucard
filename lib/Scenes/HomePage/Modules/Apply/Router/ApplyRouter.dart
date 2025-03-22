@@ -21,10 +21,9 @@ class ApplyRouter extends BaseRouter {
         fullscreenDialog: true));
   }
 
-  showAgreementScene(BuildContext context, String url) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            AgreementPage("Application Card Agreement".tr(), url)));
+  showAgreementScene(BuildContext context, String url, String title) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => AgreementPage(title, url)));
   }
 
   showAddressScene(BuildContext context, int type) {

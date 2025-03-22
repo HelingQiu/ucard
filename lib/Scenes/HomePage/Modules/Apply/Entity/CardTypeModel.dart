@@ -7,9 +7,10 @@ class CardTypeModel {
   int service;
   String currency;
   String limit;
+  int exist;
 
   CardTypeModel(this.cardBin, this.cardType, this.cardDes, this.toApplyUser,
-      this.isPhysial, this.service, this.currency, this.limit);
+      this.isPhysial, this.service, this.currency, this.limit, this.exist);
 
   factory CardTypeModel.parse(Map<String, dynamic> dic) {
     String cardBin = dic["cardBin"] ?? "";
@@ -28,7 +29,14 @@ class CardTypeModel {
     }
     String currency = dic["currency"] ?? "";
     String limit = dic["limit"] ?? "";
+
+    int exist = 0;
+    var ex = dic["exist"];
+    if (ex != null && ex is int) {
+      exist = ex;
+    }
+
     return CardTypeModel(cardBin, cardType, cardDes, toApplyUser, false,
-        service, currency, limit);
+        service, currency, limit, exist);
   }
 }

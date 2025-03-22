@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:ucardtemp/Scenes/HomePage/Modules/Apply/Entity/AmericanStateModel.dart';
 
+import '../../../../../../../Data/AppStatus.dart';
 import '../../../../../../../Network/Api.dart';
 
 class AmericanStateInteractor {
@@ -35,7 +36,8 @@ class AmericanStateInteractor {
   }
 
   Future<List<CountryModel>> fetchCountrysData() async {
-    var result = await Api().post("/api/getPhysicalCardCountrys", {}, true);
+    var result = await Api().post(
+        "/api/getPhysicalCardCountrys", {"lang": AppStatus.shared.lang}, true);
     debugPrint("/api/getPhysicalCardCountrys = $result");
     var dic = json.decode(result);
     List<CountryModel> areaCodes = [];

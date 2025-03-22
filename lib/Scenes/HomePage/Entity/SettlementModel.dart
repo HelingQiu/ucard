@@ -12,6 +12,7 @@ class SettlementModel {
   String merchantName;
   String merchantCountryCode;
   String merchantCity;
+  String transDescription;
 
   SettlementModel(
     this.recordNo,
@@ -27,6 +28,7 @@ class SettlementModel {
     this.merchantName,
     this.merchantCountryCode,
     this.merchantCity,
+    this.transDescription,
   );
 
   factory SettlementModel.parse(Map<String, dynamic> dic) {
@@ -48,6 +50,7 @@ class SettlementModel {
     // }
     String merchantCountryCode = dic["merchantCountryCode"] ?? "";
     String merchantCity = dic["merchantCity"] ?? "";
+    String transDescription = dic["transDescription"] ?? "";
 
     return SettlementModel(
       recordNo,
@@ -63,6 +66,7 @@ class SettlementModel {
       merchantName,
       merchantCountryCode,
       merchantCity,
+      transDescription,
     );
   }
 }

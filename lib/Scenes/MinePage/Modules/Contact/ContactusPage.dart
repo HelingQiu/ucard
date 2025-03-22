@@ -66,7 +66,7 @@ class ContactusPageState extends State<ContactusPage> {
                       onTap: () {
                         //
                         Clipboard.setData(
-                            const ClipboardData(text: 'ucard@uollar.io'));
+                            const ClipboardData(text: 'service@uok.top'));
                         showDialog(
                             context: context,
                             builder: (_) {
@@ -88,7 +88,7 @@ class ContactusPageState extends State<ContactusPage> {
                                   fontSize: 16),
                             )),
                             Text(
-                              'ucard@uollar.io',
+                              'service@uok.top',
                               style: TextStyle(
                                   color: AppStatus.shared.textGreyColor,
                                   fontSize: 14),
@@ -107,7 +107,7 @@ class ContactusPageState extends State<ContactusPage> {
                       onTap: () {
                         //
                         Clipboard.setData(
-                            const ClipboardData(text: '@ucard.io'));
+                            const ClipboardData(text: '@UOK_card'));
                         showDialog(
                             context: context,
                             builder: (_) {
@@ -129,7 +129,7 @@ class ContactusPageState extends State<ContactusPage> {
                                   fontSize: 16),
                             )),
                             Text(
-                              '@ucard.io',
+                              '@UOK_card',
                               style: TextStyle(
                                   color: AppStatus.shared.textGreyColor,
                                   fontSize: 14),

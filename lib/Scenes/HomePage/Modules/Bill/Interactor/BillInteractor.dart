@@ -14,6 +14,7 @@ class BillInteractor {
     String card_order,
     String settle_date,
     int currentPage,
+    int service,
   ) async {
     var result = await Api().post1(
       "/api/card/settlements",
@@ -23,6 +24,7 @@ class BillInteractor {
         "settle_date": settle_date,
         "page": currentPage,
         "pageSize": 10,
+        "service": service,
       },
       true,
     );

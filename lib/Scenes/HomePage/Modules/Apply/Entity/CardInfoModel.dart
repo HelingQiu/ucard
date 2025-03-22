@@ -66,7 +66,7 @@ class CardInfoModel {
     String recommend_fee_unit = dic["recommend_fee_unit"] ?? "";
 
     String card_shipping_fee = dic["card_shipping_fee"] ?? "";
-    String card_shipping_fee_unit = dic["card_shipping_fee_UNIT"] ?? "";
+    String card_shipping_fee_unit = dic["card_shipping_fee_unit"] ?? "";
     String close_fee = dic["close_fee"] ?? "";
     String close_fee_unit = dic["close_fee_unit"] ?? "";
 

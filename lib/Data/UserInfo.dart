@@ -17,10 +17,13 @@ class UserInfo {
   String username = "";
   String email = "";
   String phone = "";
+
   // InvestTotalModel invest = InvestTotalModel(0, 0);
   AreaCodeModel? areaCode = AreaCodeModel('HK', "852", "");
   bool hideBalance = false;
   int isKycVerified = 0;
+  int isSign = 0;
+  String signImages = "";
   bool isNewUser = false;
   int kycVerifiedLevel = 0;
   String kycAccountId = "";
@@ -33,6 +36,7 @@ class UserInfo {
   String lastEmail = "";
   String lastAreaCode = "";
   String lastPhone = "";
+
   //用于保存所选法币
   String seletedFiat = "AUD";
 

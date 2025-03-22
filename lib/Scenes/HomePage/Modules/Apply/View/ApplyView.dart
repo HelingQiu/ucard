@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -372,13 +373,13 @@ class ApplyView extends StatelessWidget {
             children: presenter.models.map((element) {
               String cardBg = '';
               if (element.level == 1) {
-                cardBg = A.assets_home_sliver_bg;
+                cardBg = A.assets_home_first_card_bg;
               } else if (element.level == 2) {
-                cardBg = A.assets_home_gold_bg;
+                cardBg = A.assets_home_second_card_bg;
               } else if (element.level == 3) {
-                cardBg = A.assets_home_platinum_bg;
+                cardBg = A.assets_home_third_card_bg;
               } else {
-                cardBg = A.assets_home_black_bg;
+                cardBg = A.assets_home_forth_card_bg;
               }
               return Center(
                 child: Container(
@@ -387,15 +388,23 @@ class ApplyView extends StatelessWidget {
                       ClipRRect(
                           child: Image.asset(cardBg),
                           borderRadius: BorderRadius.circular(10)),
-                      // Positioned(
-                      //   child: Image.asset(A.assets_home_ucard_logo),
-                      //   left: 20,
-                      //   top: 18,
-                      // ),
                       Positioned(
-                        child: Image.asset(presenter.card.cardType == 'master'
-                            ? A.assets_home_master_icon2
-                            : A.assets_home_visa_icon2),
+                        child: Text(
+                          "UOK",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        right: 20,
+                        top: 18,
+                      ),
+                      Positioned(
+                        child: Image.asset(presenter.card.cardType == 'visa'
+                            ? A.assets_home_visa_icon2
+                            : presenter.card.cardType == 'master'
+                                ? A.assets_home_master_icon2
+                                : A.assets_union_card),
                         right: 20,
                         bottom: 18,
                       ),
@@ -417,12 +426,17 @@ class ApplyView extends StatelessWidget {
         child: Stack(
           children: [
             ClipRRect(
-                child: Image.asset(A.assets_home_sliver_bg),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Image.asset(A.assets_phycial_card_bg),
+                ),
                 borderRadius: BorderRadius.circular(10)),
             Positioned(
-              child: Image.asset(presenter.card.cardType == 'master'
-                  ? A.assets_home_master_icon2
-                  : A.assets_home_visa_icon2),
+              child: Image.asset(presenter.card.cardType == 'visa'
+                  ? A.assets_home_visa_icon2
+                  : presenter.card.cardType == 'master'
+                      ? A.assets_home_master_icon2
+                      : A.assets_union_card),
               right: 20,
               bottom: 18,
             ),
@@ -516,19 +530,19 @@ class ApplyView extends StatelessWidget {
     } else if (type == 3) {
       title = 'Monthly fee'.tr();
       content =
-          '${m?.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
+          '${m?.month_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.month_fee_unit}';
     } else if (type == 4) {
       title = 'Activation fee'.tr();
       content =
-          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
     } else if (type == 5) {
       title = 'Sub-Total'.tr();
       content =
-          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
+          '${m?.open_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.open_fee_unit}';
     } else if (type == 6) {
       title = 'Shipping Fee'.tr();
       content =
-          '${m?.card_shipping_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
+          '${m?.card_shipping_fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.card_shipping_fee_unit}';
     } else if (type == 7) {
       title = 'Pay'.tr();
       double fee = double.parse(m?.open_fee ?? "0") +
@@ -537,7 +551,7 @@ class ApplyView extends StatelessWidget {
         fee = double.parse(m?.open_fee ?? "0");
       }
       content =
-          '${fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : presenter.card.currency}';
+          '${fee} ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : m?.card_shipping_fee_unit}';
     }
     debugPrint("title is $title, content is $content");
     return Padding(
@@ -619,7 +633,14 @@ class ApplyView extends StatelessWidget {
 
   getPasteBoardValue() async {
     bool hasValue = await KeyboardTools.isClipboardHasValue();
-    presenter.pasteHasValue = hasValue;
+    if (hasValue &&
+        (AddressSingleton.shared.shippingDict != null ||
+            AddressSingleton.shared.mailingDict != null ||
+            AddressSingleton.shared.residentialDict != null)) {
+      presenter.pasteHasValue = true;
+    } else {
+      presenter.pasteHasValue = false;
+    }
   }
 
   //
@@ -732,7 +753,9 @@ class ApplyView extends StatelessWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Image.asset(A.assets_mine_arrow_right),
+                Image.asset(_theme == AppTheme.light
+                    ? A.assets_Group_39918
+                    : A.assets_mine_arrow_right),
               ],
             ),
           ),
@@ -745,26 +768,34 @@ class ApplyView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: MediaQuery.of(context).size.width - 52,
+                  width: MediaQuery.of(context).size.width - 72,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
-                    color: Color(0xff232323),
+                    color: _theme == AppTheme.light
+                        ? AppStatus.shared.bgGreyLightColor
+                        : Color(0xff232323),
                   ),
                   padding:
                       EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
                   child: Text(address),
                 ),
                 InkWell(
-                    onTap: () {
-                      Clipboard.setData(ClipboardData(text: address));
-                      showDialog(
-                          context: context,
-                          builder: (_) {
-                            return ShowMessage(2, 'Copy to Clipboard'.tr(),
-                                styleType: 1, width: 257);
-                          });
-                    },
-                    child: Image.asset(A.assets_reward_copy)),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: address));
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return ShowMessage(2, 'Copy to Clipboard'.tr(),
+                              styleType: 1, width: 257);
+                        });
+                    streamController.add(0);
+                  },
+                  child: Image.asset(
+                    A.assets_reward_copy,
+                    height: 40,
+                    width: 40,
+                  ),
+                ),
               ],
             ),
           ),
@@ -918,72 +949,101 @@ class ApplyView extends StatelessWidget {
     //协议说明文案
     String userPrivateProtocol = 'Apply agreement'.tr();
 
+    TapGestureRecognizer _recognizer1 = TapGestureRecognizer();
+    TapGestureRecognizer _recognizer2 = TapGestureRecognizer();
+    TapGestureRecognizer _recognizer3 = TapGestureRecognizer();
+
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 28),
-      child: InkWell(
-        onTap: () {
-          presenter.agreementButtonPressed(context);
-        },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InkWell(
-              onTap: () {
-                presenter.isProtocolSelected = !presenter.isProtocolSelected;
-                streamController.add(0);
-              },
-              child: Image.asset(
-                presenter.isProtocolSelected
-                    ? A.assets_physical_selected
-                    : A.assets_phycail_unselected,
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill,
-              ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              presenter.isProtocolSelected = !presenter.isProtocolSelected;
+              streamController.add(0);
+            },
+            child: Image.asset(
+              presenter.isProtocolSelected
+                  ? A.assets_physical_selected
+                  : A.assets_phycail_unselected,
+              width: 20,
+              height: 20,
+              fit: BoxFit.fill,
             ),
-            SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Container(
-                child: RichText(
-                  //必传文本
-                  text: TextSpan(
-                    text: "Please read the ".tr(),
-                    style: TextStyle(
-                      color: _theme == AppTheme.light
-                          ? AppStatus.shared.bgBlackColor
-                          : AppStatus.shared.bgWhiteColor,
-                      fontSize: 12,
-                      height: 1.5,
-                      decoration: TextDecoration.underline,
-                    ),
-                    //手势监听
-                    // recognizer: ,
-                    children: [
-                      TextSpan(
-                        text: "${"Application Card Agreement".tr()}",
-                        style: TextStyle(
-                            color: AppStatus.shared.bgBlueColor,
-                            decoration: TextDecoration.underline,
-                            fontSize: 12),
-                      ),
-                      TextSpan(
-                        text: userPrivateProtocol,
-                        style: TextStyle(
-                            color: _theme == AppTheme.light
-                                ? AppStatus.shared.bgBlackColor
-                                : AppStatus.shared.bgWhiteColor,
-                            decoration: TextDecoration.underline,
-                            fontSize: 12),
-                      ),
-                    ],
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Container(
+              child: RichText(
+                //必传文本
+                text: TextSpan(
+                  text: "Please read the ".tr(),
+                  style: TextStyle(
+                    color: _theme == AppTheme.light
+                        ? AppStatus.shared.bgBlackColor
+                        : AppStatus.shared.bgWhiteColor,
+                    fontSize: 12,
+                    height: 1.5,
+                    decoration: TextDecoration.underline,
                   ),
+                  //手势监听
+                  // recognizer: ,
+                  children: [
+                    TextSpan(
+                      text: "${"Statement".tr()}",
+                      style: TextStyle(
+                          color: AppStatus.shared.bgBlueColor,
+                          decoration: TextDecoration.underline,
+                          fontSize: 12),
+                      recognizer: _recognizer1
+                        ..onTap = () {
+                          print('文本被点击！');
+                          presenter.agreement005ButtonPressed(context);
+                        },
+                    ),
+                    TextSpan(
+                      text: "${"Privacy Policy".tr()}",
+                      style: TextStyle(
+                          color: AppStatus.shared.bgBlueColor,
+                          decoration: TextDecoration.underline,
+                          fontSize: 12),
+                      recognizer: _recognizer2
+                        ..onTap = () {
+                          print('文本被点击！');
+                          presenter.agreement004ButtonPressed(context);
+                        },
+                    ),
+                    TextSpan(
+                      text:
+                          "${"Choose to refuse the use of personal information in direct promotions".tr()}",
+                      style: TextStyle(
+                          color: AppStatus.shared.bgBlueColor,
+                          decoration: TextDecoration.underline,
+                          fontSize: 12),
+                      recognizer: _recognizer3
+                        ..onTap = () {
+                          print('文本被点击！');
+                          presenter.agreement006ButtonPressed(context);
+                        },
+                    ),
+                    TextSpan(
+                      text: userPrivateProtocol,
+                      style: TextStyle(
+                          color: _theme == AppTheme.light
+                              ? AppStatus.shared.bgBlackColor
+                              : AppStatus.shared.bgWhiteColor,
+                          decoration: TextDecoration.underline,
+                          fontSize: 12),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

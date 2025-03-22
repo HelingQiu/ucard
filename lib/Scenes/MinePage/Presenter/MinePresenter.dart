@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../../../Common/Notification.dart';
+import '../../../Common/StreamCenter.dart';
 import '../../../Data/AppStatus.dart';
 import '../../../Data/UserInfo.dart';
 import '../Interactor/MineInteractor.dart';
@@ -26,6 +27,12 @@ class MinePresenter {
     view?.langStream.add(0);
   }
 
+  Future<String> getKycToken() async {
+    var result = await interactor.getKycToken();
+    var token = result?["data"]["token"] ?? "";
+    return token;
+  }
+
   //登录
   loginPressed(BuildContext context) {
     LoginPageNotification().dispatch(context);
@@ -39,8 +46,7 @@ class MinePresenter {
   //kyc
   kycButtonPressed(BuildContext context) {
     if (UserInfo.shared.isLoggedin == true) {
-      if (UserInfo.shared.isKycVerified == 1 ||
-          UserInfo.shared.isKycVerified == 2) {
+      if (UserInfo.shared.isKycVerified == 1 && (UserInfo.shared.isSign == 3)) {
         return;
       }
       view?.showKycDialog(context);
@@ -94,5 +100,13 @@ class MinePresenter {
   //help center
   helpCenterButtonPressed(BuildContext context) {
     router.showHelpCenterPage(context);
+  }
+
+  //上传签名
+  Future<Map> uploadSignCall(BuildContext context, String sign) async {
+    var result = await interactor.uploadSign(sign);
+    var statusCode = result?["status_code"];
+    var msg = result?["message"];
+    return {"code": statusCode, "msg": msg};
   }
 }

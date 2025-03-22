@@ -2,6 +2,19 @@
 platform :ios, '12.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+
+source 'https://cdn.cocoapods.org/'
+source 'https://github.com/SumSubstance/Specs.git'
+
+# 如需启用MRTDReader(NFC)模块，取消下面注释
+ENV['IDENSIC_WITH_MRTDREADER'] = 'true'
+
+# 如需启用VideoIdent模块，取消下面注释
+#ENV['IDENSIC_WITH_VIDEOIDENT'] = 'true'
+
+# 如需启用EID模块，取消下面注释
+#ENV['IDENSIC_WITH_EID'] = 'true'
+
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 project 'Runner', {

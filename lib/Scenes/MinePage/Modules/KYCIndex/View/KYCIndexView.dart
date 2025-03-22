@@ -7,7 +7,8 @@ import '../../../../../Data/UserInfo.dart';
 import '../../../../../main.dart';
 import '../Presenter/KYCIndexPresenter.dart';
 import 'dart:async';
-import 'package:jumio_mobile_sdk_flutter/jumio_mobile_sdk_flutter.dart';
+
+// import 'package:jumio_mobile_sdk_flutter/jumio_mobile_sdk_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class KYCIndexView extends StatelessWidget {
@@ -230,21 +231,21 @@ class KYCIndexView extends StatelessWidget {
 
   Future<void> _start(BuildContext context, String authorizationToken) async {
     await _logErrors(context, () async {
-      await Jumio.init(authorizationToken, "SG");
-      final result = await Jumio.start({
-        "background": "#141722",
-        "primaryColor": "#FFCD00",
-        "loadingCirclePlain": "#FFCD00",
-        "textForegroundColor": "#FFFFFF",
-        "navigationIconColor": "#FFFFFF",
-        "primaryButtonBackground": "#FFCD00",
-        "primaryButtonBackgroundPressed": "#B38F00",
-        "bubbleBackground": "#1A202E",
-        "bubbleForeground": "#FFFFFF",
-        "searchBubbleForeground": "FFFFFF"
-      });
-      await _showDialogWithMessage(
-          "Jumio has completed. Result: $result", context);
+      // await Jumio.init(authorizationToken, "SG");
+      // final result = await Jumio.start({
+      //   "background": "#141722",
+      //   "primaryColor": "#FFCD00",
+      //   "loadingCirclePlain": "#FFCD00",
+      //   "textForegroundColor": "#FFFFFF",
+      //   "navigationIconColor": "#FFFFFF",
+      //   "primaryButtonBackground": "#FFCD00",
+      //   "primaryButtonBackgroundPressed": "#B38F00",
+      //   "bubbleBackground": "#1A202E",
+      //   "bubbleForeground": "#FFFFFF",
+      //   "searchBubbleForeground": "FFFFFF"
+      // });
+      // await _showDialogWithMessage(
+      //     "Jumio has completed. Result: $result", context);
     });
   }
 

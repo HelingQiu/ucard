@@ -113,6 +113,22 @@ class TopupView extends StatelessWidget {
     } else if (presenter.cardModel.level == 4) {
       cardBg = A.assets_topup_forth_bg;
     }
+    double amount = 0.0;
+    double hkdAmount = 0.0;
+    if (_amoutController.text.isEmpty) {
+      amount = 1;
+      hkdAmount = presenter.rate_usdt_hkd;
+    } else {
+      amount = double.parse(_amoutController.text);
+      if (presenter.cardModel.currency == "USD" ||
+          presenter.cardModel.currency == "USDC") {
+        hkdAmount = amount;
+      } else {
+        hkdAmount =
+            double.parse((amount * presenter.rate_usdt_hkd).toStringAsFixed(2));
+      }
+    }
+
     return Column(
       // shrinkWrap: true,
       children: [
@@ -150,7 +166,7 @@ class TopupView extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: 2),
           child: Text(
-            "${presenter.cardModel.card_type == "visa" ? "Visa" : "Mastercard"}",
+            "${presenter.cardModel.card_type == "visa" ? "Visa" : presenter.cardModel.card_type == "master" ? "Mastercard" : "UnionPay"}",
             style: TextStyle(
                 color: _theme == AppTheme.light
                     ? AppStatus.shared.bgBlackColor
@@ -194,7 +210,7 @@ class TopupView extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      "1 ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : "USDT"} ≈ ${presenter.rate_usdt_hkd}",
+                      "$amount ${(UserInfo.shared.email == AppStatus.shared.specialAccount) ? "USD" : "USDT"} ≈ ${hkdAmount} ${presenter.cardModel.currency}",
                       style: TextStyle(
                           color: AppStatus.shared.textGreyColor,
                           fontSize: 14,
@@ -207,7 +223,7 @@ class TopupView extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      "Top-up fee: ${presenter.cardInfoModel?.recharge_fee}${presenter.cardInfoModel?.recharge_fee_unit} HKD",
+                      "Top-up fee: ${presenter.cardInfoModel?.recharge_fee}${presenter.cardInfoModel?.recharge_fee_unit} ${presenter.cardModel.currency}",
                       style: TextStyle(
                           color: AppStatus.shared.textGreyColor,
                           fontSize: 14,
@@ -274,6 +290,7 @@ class TopupView extends StatelessWidget {
               onChanged: (text) {},
               onEditingComplete: () {
                 FocusScope.of(context).unfocus();
+                streamController.add(0);
               },
               onTap: () {},
             ),
@@ -380,7 +397,7 @@ class TopupView extends StatelessWidget {
 
   Widget _buildNoteInfo(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 100),
+      padding: EdgeInsets.only(left: 16, right: 16, top: 20),
       child: Text(
         'Topup note'.tr(),
         style: TextStyle(color: AppStatus.shared.textGreyColor, fontSize: 12),
@@ -484,8 +501,11 @@ class TopupView extends StatelessWidget {
             cardNostr.substring(cardNostr.length - 4, cardNostr.length);
       }
     }
-    String cardType =
-        presenter.cardModel.card_type == "master" ? "Mastercard" : "Visa";
+    String cardType = presenter.cardModel.card_type == "master"
+        ? "Mastercard"
+        : presenter.cardModel.card_type == "visa"
+            ? "Visa"
+            : "UnionPay";
     if (presenter.cardModel.card_no.isNotEmpty) {
       cardNostr = "$cardNostr ($cardType)";
     } else {

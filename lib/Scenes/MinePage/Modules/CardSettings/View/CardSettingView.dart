@@ -31,6 +31,7 @@ class CardSettingView extends StatelessWidget {
   CardSettingView(this.presenter);
 
   AppTheme _theme = AppTheme.dark;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -178,7 +179,13 @@ class CardSettingView extends StatelessWidget {
                           ),
                           borderRadius: BorderRadius.circular(10)),
                       Positioned(
-                        child: Image.asset(A.assets_home_ucard_logo),
+                        child: Text(
+                          "UOK",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
                         right: 20,
                         top: 18,
                       ),
@@ -251,9 +258,11 @@ class CardSettingView extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        child: Image.asset(element.card_type == 'master'
-                            ? A.assets_home_master_icon2
-                            : A.assets_home_visa_icon2),
+                        child: Image.asset(element.card_type == 'visa'
+                            ? A.assets_home_visa_icon2
+                            : element.card_type == 'master'
+                                ? A.assets_home_master_icon2
+                                : A.assets_union_card),
                         right: 20,
                         bottom: 18,
                       ),

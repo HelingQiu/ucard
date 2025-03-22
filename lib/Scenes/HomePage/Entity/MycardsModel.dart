@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 class MycardsModel {
   String card_order;
@@ -171,10 +172,10 @@ class MycardsModel {
       img_card_bg,
       service,
       hold_status,
-      unlost_fee,
-      unlost_fee_unit,
       unfreeze_fee_unit,
       unfreeze_fee,
+      unlost_fee,
+      unlost_fee_unit,
       mod_pin_fee,
       mod_pin_fee_unit,
       card_transfer_fee,
@@ -182,5 +183,20 @@ class MycardsModel {
       currency,
       card_type_sub,
     );
+  }
+}
+
+class Card33InfoModel {
+  String valid_thre;
+  String cvv;
+  String pin;
+
+  Card33InfoModel(this.valid_thre, this.cvv, this.pin);
+
+  factory Card33InfoModel.parse(Map<String, dynamic> dic) {
+    String valid_thre = dic["valid_thre"] ?? "";
+    String cvv = dic["cvv"] ?? "";
+    String pin = dic["pin"] ?? "";
+    return Card33InfoModel(valid_thre, cvv, pin);
   }
 }

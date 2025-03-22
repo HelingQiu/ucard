@@ -91,6 +91,15 @@ class LoginCenter {
           if (is_kyc_verified != null && is_kyc_verified is int) {
             UserInfo.shared.isKycVerified = is_kyc_verified;
           }
+          var is_sign = data["is_sign"];
+          if (is_sign != null && is_sign is int) {
+            UserInfo.shared.isSign = is_sign;
+          }
+          var sign_images = data["sign_images"];
+          if (sign_images != null && sign_images is String) {
+            UserInfo.shared.signImages = sign_images;
+          }
+
           var kyc_verified_level = data["kyc_verified_level"];
           if (kyc_verified_level != null && kyc_verified_level is int) {
             UserInfo.shared.kycVerifiedLevel = kyc_verified_level;
@@ -200,11 +209,14 @@ class LoginCenter {
 
   Future<void> fetchUserInfo() async {
     var result = await Api().post("/api/user/info", {}, true);
-    debugPrint("fetchUserInfo = $result");
+
     if (result == null || result.isEmpty) {
       return;
     }
     var dic = json.decode(result);
+    var isSignnn = dic["data"]["is_sign"];
+    debugPrint("fetchUserInfo = $result ====");
+    debugPrint("is_sign===$isSignnn");
     if (dic != null) {
       var code = dic["status_code"];
       if (code != null) {
@@ -227,6 +239,16 @@ class LoginCenter {
             if (is_kyc_verified != null && is_kyc_verified is int) {
               UserInfo.shared.isKycVerified = is_kyc_verified;
             }
+
+            var is_sign = data["is_sign"];
+            if (is_sign != null && is_sign is int) {
+              UserInfo.shared.isSign = is_sign;
+            }
+            var sign_images = data["sign_images"];
+            if (sign_images != null && sign_images is String) {
+              UserInfo.shared.signImages = sign_images;
+            }
+
             var kyc_verified_level = data["kyc_verified_level"];
             if (kyc_verified_level != null && kyc_verified_level is int) {
               UserInfo.shared.kycVerifiedLevel = kyc_verified_level;

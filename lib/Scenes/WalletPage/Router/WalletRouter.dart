@@ -44,8 +44,10 @@ class WalletRouter extends BaseRouter {
   }
 
   //card recharge
-  showCardRechargeDetailPage(BuildContext context, int transferId) {
+  showCardRechargeDetailPage(
+      BuildContext context, int transferId, int cardSource) {
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => TopupDetailBuilder(transferId).scene));
+        builder: (context) =>
+            TopupDetailBuilder(transferId, cardSource).scene));
   }
 }

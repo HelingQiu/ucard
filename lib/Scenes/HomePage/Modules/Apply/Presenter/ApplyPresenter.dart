@@ -110,12 +110,31 @@ class ApplyPresenter {
     }
   }
 
-  agreementButtonPressed(BuildContext context) {
+  agreement005ButtonPressed(BuildContext context) {
     String agreementUrl = Api().apiUrl +
         "/api/conf/agreementinfo?" +
-        "code=a002&&lang=${AppStatus.shared.lang}";
+        "code=a005&&lang=${AppStatus.shared.lang}";
     if (agreementUrl != "") {
-      router.showAgreementScene(context, agreementUrl);
+      router.showAgreementScene(context, agreementUrl, "Statement".tr());
+    }
+  }
+
+  agreement004ButtonPressed(BuildContext context) {
+    String agreementUrl = Api().apiUrl +
+        "/api/conf/agreementinfo?" +
+        "code=a004&&lang=${AppStatus.shared.lang}";
+    if (agreementUrl != "") {
+      router.showAgreementScene(context, agreementUrl, "Privacy Policy".tr());
+    }
+  }
+
+  agreement006ButtonPressed(BuildContext context) {
+    String agreementUrl = Api().apiUrl +
+        "/api/conf/agreementinfo?" +
+        "code=a006&&lang=${AppStatus.shared.lang}";
+    if (agreementUrl != "") {
+      router.showAgreementScene(
+          context, agreementUrl, "Application Card Agreement".tr());
     }
   }
 

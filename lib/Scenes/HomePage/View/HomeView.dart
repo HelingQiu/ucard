@@ -307,7 +307,7 @@ class HomeView extends StatelessWidget {
                   children: [
                     ClipRRect(
                         child: Image.asset(
-                          A.assets_home_sliver_bg,
+                          A.assets_phycial_card_bg,
                           width: (MediaQuery.of(context).size.width - 40),
                           height: 184.0 /
                               327 *
@@ -369,6 +369,7 @@ class HomeView extends StatelessWidget {
             if (showCardInfo) {
               _controller.toggleCard();
               showCardInfo = !showCardInfo;
+              presenter.showCardNum = false;
             }
           });
         }
@@ -394,7 +395,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   ClipRRect(
                       child: Image.asset(
-                        A.assets_home_sliver_bg,
+                        A.assets_phycial_card_bg,
                         width: (MediaQuery.of(context).size.width - 40),
                         height: 184.0 /
                             327 *
@@ -432,6 +433,7 @@ class HomeView extends StatelessWidget {
             onPageChanged: (index) {
               _currentPageIndex = index;
               _pageController2.jumpToPage(index);
+              presenter.showCardNum = false;
               // MycardsModel m = presenter.models[_currentPageIndex];
               // DateFormat dateFormat = DateFormat("yyyy-MM");
               // String dateTime = dateFormat.format(presenter.selectTime);
@@ -459,16 +461,16 @@ class HomeView extends StatelessWidget {
                 cardBg = A.assets_home_forth_card_bg;
               }
               if (element.service == 2) {
-                cardBg = A.assets_home_first_card_bg;
+                cardBg = A.assets_phycial_card_bg;
               } else if (element.service == 3) {
-                cardBg = A.assets_home_first_card_bg;
+                cardBg = A.assets_phycial_card_bg;
               }
               debugPrint("home imagebg is ${element.img_card_bg}");
               String statusStr = "";
               if (element.status == "WA") {
                 statusStr = "Under review".tr();
               } else if (element.status == "WS") {
-                statusStr = "Approved for mailing".tr();
+                statusStr = "To be mailed".tr();
               } else if (element.status == "P") {
                 statusStr = "No card printed".tr();
               } else if (element.status == "E") {
@@ -487,6 +489,8 @@ class HomeView extends StatelessWidget {
                 statusStr = "Formal report of loss".tr();
               } else if (element.status == "R") {
                 statusStr = "Card returned".tr();
+              } else if (element.hold_status == "H") {
+                statusStr = "Free".tr();
               }
               debugPrint(
                   "status is $statusStr serviec is ${element.service} card name is ${element.card_name}");
@@ -515,10 +519,19 @@ class HomeView extends StatelessWidget {
                                   fit: BoxFit.fill,
                                 ),
                           borderRadius: BorderRadius.circular(10)),
-                      Positioned(
-                        child: Image.asset(A.assets_home_ucard_logo),
-                        right: 20,
-                        top: 18,
+                      Visibility(
+                        visible: element.service == 1,
+                        child: Positioned(
+                          child: Text(
+                            "UOK",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          left: 20,
+                          top: 18,
+                        ),
                       ),
                       Visibility(
                         visible: element.img_left_top.isNotEmpty,
@@ -604,7 +617,9 @@ class HomeView extends StatelessWidget {
                       Positioned(
                         child: Image.asset(element.card_type == 'visa'
                             ? A.assets_home_visa_icon2
-                            : A.assets_home_master_icon2),
+                            : element.card_type == 'master'
+                                ? A.assets_home_master_icon2
+                                : A.assets_union_card),
                         right: 20,
                         bottom: 18,
                       ),
@@ -653,15 +668,19 @@ class HomeView extends StatelessWidget {
                 cardNo = '';
               }
               if (element.level == 1) {
-                cardBg = A.assets_home_sliver_bg;
+                cardBg = A.assets_home_first_card_bg;
               } else if (element.level == 2) {
-                cardBg = A.assets_home_gold_bg;
+                cardBg = A.assets_home_second_card_bg;
               } else if (element.level == 3) {
-                cardBg = A.assets_home_platinum_bg;
+                cardBg = A.assets_home_third_card_bg;
               } else {
-                cardBg = A.assets_home_black_bg;
+                cardBg = A.assets_home_forth_card_bg;
               }
-
+              if (element.service == 2) {
+                cardBg = A.assets_phycial_card_bg;
+              } else if (element.service == 3) {
+                cardBg = A.assets_phycial_card_bg;
+              }
               return Center(
                 child: Container(
                   child: Stack(
@@ -676,11 +695,20 @@ class HomeView extends StatelessWidget {
                             fit: BoxFit.fill,
                           ),
                           borderRadius: BorderRadius.circular(10)),
-                      // Positioned(
-                      //   child: Image.asset(A.assets_home_ucard_logo),
-                      //   left: 20,
-                      //   top: 18,
-                      // ),
+                      Visibility(
+                        visible: element.service == 1,
+                        child: Positioned(
+                          child: Text(
+                            "UOK",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          left: 20,
+                          top: 18,
+                        ),
+                      ),
 
                       //当前的卡信息
                       Positioned(
@@ -692,7 +720,9 @@ class HomeView extends StatelessWidget {
                               return Row(
                                 children: [
                                   Text(
-                                    !presenter.showCardNum
+                                    (!presenter.showCardNum &&
+                                            element.service != 1 &&
+                                            cardNo.isNotEmpty)
                                         ? AppStatus.shared
                                             .meet4AddBlankAndHide(cardNo)
                                         : AppStatus.shared
@@ -706,12 +736,24 @@ class HomeView extends StatelessWidget {
                                     width: 10,
                                   ),
                                   Visibility(
-                                    visible: cardNo.isNotEmpty,
+                                    visible: cardNo.isNotEmpty &&
+                                        element.service != 1,
                                     child: InkWell(
                                       onTap: () {
-                                        presenter.showCardNum =
-                                            !presenter.showCardNum;
-                                        cardNumController.sink.add(0);
+                                        if (!presenter.showCardNum) {
+                                          if (UserInfo.shared.has_safe_pin !=
+                                              1) {
+                                            showSafeAlertDialog(
+                                                context,
+                                                "Notes",
+                                                "You have not set up your payment safety pin.");
+                                            return;
+                                          }
+                                          showDisplayCardNumberView(context);
+                                        } else {
+                                          presenter.showCardNum = false;
+                                          cardNumController.sink.add(0);
+                                        }
                                       },
                                       child: Image.asset(!presenter.showCardNum
                                           ? A.assets_visible_eyes
@@ -741,75 +783,146 @@ class HomeView extends StatelessWidget {
                               );
                             }),
                       ),
-                      Visibility(
-                        visible: (element.expiry_date.isNotEmpty),
-                        child: Positioned(
-                          left: 20,
-                          bottom: 20,
-                          child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Expiry Date'.tr(),
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexColor(0xffffff,
-                                            alpha: 0.8),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  SizedBox(
-                                    height: 2,
-                                  ),
-                                  Text(
-                                    "${element.expiry_month}/${element.expiry_year}",
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexColor(0xffffff,
-                                            alpha: 1),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
+                      // StreamBuilder(
+                      //     stream: cardNumController.stream,
+                      //     builder: (context, snapshot) {
+                      //       return Visibility(
+                      //           visible: presenter.showCardNum &&
+                      //               element.service == 3,
+                      //           child: Positioned(
+                      //             left: 30,
+                      //             bottom: 50,
+                      //             child: Text(
+                      //               "${'Pin:'.tr()}${presenter.card33Model?.pin}",
+                      //               style: TextStyle(
+                      //                   color: Colors.white,
+                      //                   fontSize: 16,
+                      //                   fontWeight: FontWeight.w500),
+                      //             ),
+                      //           ));
+                      //     }),
+                      StreamBuilder<int>(
+                          stream: cardNumController.stream,
+                          builder: (context, snapshot) {
+                            return Visibility(
+                              visible: (element.expiry_date.isNotEmpty ||
+                                  (presenter.showCardNum &&
+                                      element.service != 1 &&
+                                      (presenter.card33Model?.valid_thre ?? '')
+                                          .isNotEmpty)),
+                              child: Positioned(
+                                left: 20,
+                                bottom: 20,
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Expiry Date'.tr(),
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexColor(
+                                                  0xffffff,
+                                                  alpha: 0.8),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                        SizedBox(
+                                          height: 2,
+                                        ),
+                                        Text(
+                                          element.service == 1
+                                              ? "${element.expiry_month}/${element.expiry_year}"
+                                              : "${presenter.card33Model?.valid_thre}",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexColor(
+                                                  0xffffff,
+                                                  alpha: 1),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 28,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          element.card_type == 'master'
+                                              ? 'CVC2'
+                                              : "CVV2",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexColor(
+                                                  0xffffff,
+                                                  alpha: 0.8),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                        SizedBox(
+                                          height: 2,
+                                        ),
+                                        Text(
+                                          element.service == 1
+                                              ? "${element.card_cvv}"
+                                              : "${presenter.card33Model?.cvv}",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexColor(
+                                                  0xffffff,
+                                                  alpha: 1),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 28,
+                                    ),
+                                    Visibility(
+                                      visible: element.service == 3,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Pin".tr(),
+                                            style: TextStyle(
+                                                color: ColorsUtil.hexColor(
+                                                    0xffffff,
+                                                    alpha: 0.8),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          SizedBox(
+                                            height: 2,
+                                          ),
+                                          Text(
+                                            "${presenter.card33Model?.pin}",
+                                            style: TextStyle(
+                                                color: ColorsUtil.hexColor(
+                                                    0xffffff,
+                                                    alpha: 1),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SizedBox(
-                                width: 48,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    element.card_type == 'master'
-                                        ? 'CVC2'
-                                        : "CVV2",
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexColor(0xffffff,
-                                            alpha: 0.8),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                  SizedBox(
-                                    height: 2,
-                                  ),
-                                  Text(
-                                    "${element.card_cvv}",
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexColor(0xffffff,
-                                            alpha: 1),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                            );
+                          }),
 
                       Positioned(
                         child: Image.asset(element.card_type == 'visa'
                             ? A.assets_home_visa_icon2
-                            : A.assets_home_master_icon2),
+                            : element.card_type == 'master'
+                                ? A.assets_home_master_icon2
+                                : A.assets_union_card),
                         right: 20,
                         bottom: 18,
                       ),
@@ -827,7 +940,7 @@ class HomeView extends StatelessWidget {
   //按钮
   Widget _buildBtnRow(BuildContext context) {
     if (presenter.models.isEmpty) {
-      return _buildVisualBtn(context);
+      return _buildPhysialBtn(context);
     }
     MycardsModel m = presenter.models[_currentPageIndex];
     var isPhysialCard = m.service;
@@ -838,6 +951,53 @@ class HomeView extends StatelessWidget {
     if (isPhysialCard == 1) {
       //虚拟卡
       return _buildVisualBtn(context);
+    }
+    return _buildPhysialBtn(context);
+  }
+
+  Widget _buildPhysialBtn(BuildContext context) {
+    MycardsModel m = MycardsModel(
+        "",
+        "",
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        1,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "");
+    if (presenter.models.isNotEmpty) {
+      m = presenter.models[_currentPageIndex];
+    }
+    // MycardsModel m = presenter.models[_currentPageIndex];
+    var width = (MediaQuery.of(context).size.width - 20) / 4;
+    if (width < 50) {
+      width = 70;
     }
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10, top: 32, bottom: 14),
@@ -857,6 +1017,17 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
+                if (UserInfo.shared.isKycVerified != 1 &&
+                    AppStatus.shared.withdrawWithoutKyc == false) {
+                  showDialog(
+                      context: context,
+                      builder: (_) {
+                        return ShowMessage(2,
+                            "Please Complete Identity Verification First".tr(),
+                            dismissSeconds: 2, styleType: 1, width: 257);
+                      });
+                  return;
+                }
                 presenter.applyButtonPressed(context);
               },
               child: Column(
@@ -906,19 +1077,21 @@ class HomeView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
                 //
-                if (presenter.models.isNotEmpty) {
-                  if (m.status == "N") {
-                    showSafetyAuthView(context, 1);
-                  } else {
-                    //
+                if (UserInfo.shared.isLoggedin) {
+                  if (UserInfo.shared.has_safe_pin != 1) {
+                    showSafeAlertDialog(context, "Notes",
+                        "You have not set up your payment safety pin.");
+                    return;
+                  }
+                  if (presenter.models.isNotEmpty) {
+                    if (m.status == "N") {
+                      showSafetyAuthView(context, 1);
+                    } else {
+                      //
+                    }
                   }
                 } else {
-                  //请先申请卡片
-                  if (UserInfo.shared.isLoggedin) {
-                    showTopError(context, 'Please apply card');
-                  } else {
-                    presenter.loginPressed(context);
-                  }
+                  presenter.loginPressed(context);
                 }
               },
               child: Column(
@@ -936,7 +1109,7 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_topup_black
-                            : m.status == "N"
+                            : m.status == "N" && m.hold_status != "H"
                                 ? A.assets_active_icon
                                 : A.assets_unactive_icon)),
                   ),
@@ -970,18 +1143,20 @@ class HomeView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
                 //
-                if (presenter.models.isNotEmpty) {
-                  MycardsModel item = presenter.models[_currentPageIndex];
-                  if (item.status == "A") {
-                    presenter.topupButtonPressed(context, item);
+                if (UserInfo.shared.isLoggedin) {
+                  if (m.hold_status == "H") {
+                    showTopError(context, 'Please unfreeze card');
+                    return;
+                  } else {
+                    if (presenter.models.isNotEmpty) {
+                      MycardsModel item = presenter.models[_currentPageIndex];
+                      if (item.status == "A" && m.hold_status != "H") {
+                        presenter.topupButtonPressed(context, item);
+                      }
+                    }
                   }
                 } else {
-                  //请先申请卡片
-                  if (UserInfo.shared.isLoggedin) {
-                    showTopError(context, 'Please apply card');
-                  } else {
-                    presenter.loginPressed(context);
-                  }
+                  presenter.loginPressed(context);
                 }
               },
               child: Column(
@@ -999,7 +1174,7 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_topup_black
-                            : m.status == "A"
+                            : m.status == "A" && m.hold_status != "H"
                                 ? A.assets_home_topup
                                 : A.assets_un_topup_icon)),
                   ),
@@ -1032,21 +1207,30 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
-                if (presenter.models.isNotEmpty) {
-                  MycardsModel item = presenter.models[_currentPageIndex];
-                  if (item.status == "A" &&
-                      (item.hold_status == "R" || item.hold_status == "N")) {
-                    showFreezeDialog(context);
-                  } else if (item.status == "A" && item.hold_status == "H") {
-                    showSafetyAuthView(context, 1);
+                if (UserInfo.shared.isLoggedin) {
+                  if (presenter.models.isNotEmpty) {
+                    if (UserInfo.shared.has_safe_pin != 1) {
+                      showSafeAlertDialog(context, "Notes",
+                          "You have not set up your payment safety pin.");
+                      return;
+                    }
+                    MycardsModel item = presenter.models[_currentPageIndex];
+                    if (item.status == "A" &&
+                        (item.hold_status == "R" || item.hold_status == "N")) {
+                      showFreezeDialog(context);
+                    } else if (item.status == "A" && item.hold_status == "H") {
+                      showSafetyAuthView(context, 2);
+                    }
+                  } else {
+                    //请先申请卡片
+                    if (UserInfo.shared.isLoggedin) {
+                      showTopError(context, 'Please apply card');
+                    } else {
+                      presenter.loginPressed(context);
+                    }
                   }
                 } else {
-                  //请先申请卡片
-                  if (UserInfo.shared.isLoggedin) {
-                    showTopError(context, 'Please apply card');
-                  } else {
-                    presenter.loginPressed(context);
-                  }
+                  presenter.loginPressed(context);
                 }
               },
               child: Column(
@@ -1103,11 +1287,17 @@ class HomeView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
                 if (UserInfo.shared.isLoggedin) {
+                  if (UserInfo.shared.has_safe_pin != 1) {
+                    showSafeAlertDialog(context, "Notes",
+                        "You have not set up your payment safety pin.");
+                    return;
+                  }
                   if (presenter.models.isNotEmpty) {
                     MycardsModel item = presenter.models[_currentPageIndex];
-                    if (item.status == "A") {
+                    if (item.status == "A" && m.hold_status != "H") {
                       showSafetyAuthView(context, 4);
-                    } else if (item.status == "K" || item.status == "L") {
+                    } else if (item.status == "K" ||
+                        item.status == "L" && m.hold_status != "H") {
                       showSafetyAuthView(context, 3);
                     }
                   } else {
@@ -1134,8 +1324,9 @@ class HomeView extends StatelessWidget {
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_safecode_black
                             : (m.status == "A" ||
-                                    m.status == "K" ||
-                                    m.status == "L")
+                                        m.status == "K" ||
+                                        m.status == "L") &&
+                                    m.hold_status != "H"
                                 ? A.assets_lost_icon
                                 : A.assets_unlock_icon)),
                   ),
@@ -1171,9 +1362,14 @@ class HomeView extends StatelessWidget {
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
                 if (UserInfo.shared.isLoggedin) {
+                  if (UserInfo.shared.has_safe_pin != 1) {
+                    showSafeAlertDialog(context, "Notes",
+                        "You have not set up your payment safety pin.");
+                    return;
+                  }
                   if (presenter.models.isNotEmpty) {
                     //
-                    if (m.status == "A") {
+                    if (m.status == "A" && m.hold_status != "H") {
                       showTransferDialog(context);
                     }
                   } else {
@@ -1199,7 +1395,7 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_transfer_icon
-                            : m.status == "A"
+                            : m.status == "A" && m.hold_status != "H"
                                 ? A.assets_untransfer_icon
                                 : A.assets_real_trans_icon)),
                   ),
@@ -1232,8 +1428,17 @@ class HomeView extends StatelessWidget {
                   elevation: 0,
                   padding: EdgeInsets.only(left: 3, right: 3)),
               onPressed: () {
-                if (m.status == "A") {
-                  showModifyPinDialog(context);
+                if (UserInfo.shared.isLoggedin) {
+                  if (UserInfo.shared.has_safe_pin != 1) {
+                    showSafeAlertDialog(context, "Notes",
+                        "You have not set up your payment safety pin.");
+                    return;
+                  }
+                  if (m.status == "A" && m.hold_status != "H") {
+                    showModifyPinDialog(context);
+                  }
+                } else {
+                  presenter.loginPressed(context);
                 }
               },
               child: Column(
@@ -1251,7 +1456,7 @@ class HomeView extends StatelessWidget {
                     child: Center(
                         child: Image.asset(_theme == AppTheme.light
                             ? A.assets_modify_icon
-                            : m.status == "A"
+                            : m.status == "A" && m.hold_status != "H"
                                 ? A.assets_modify_icon
                                 : A.assets_unmodifypin_icon)),
                   ),
@@ -1931,8 +2136,12 @@ class HomeView extends StatelessWidget {
                                             "Your card activation is successful."
                                                 .tr());
                                         presenter.fetchMycardsList();
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       }
                                     } else if (type == 2) {
                                       Map result =
@@ -1945,8 +2154,12 @@ class HomeView extends StatelessWidget {
                                             "Congratulations!".tr(),
                                             "Successful unfreeze!".tr());
                                         presenter.fetchMycardsList();
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       }
                                     } else if (type == 3) {
                                       Map result = await presenter.unlost33Card(
@@ -1958,8 +2171,12 @@ class HomeView extends StatelessWidget {
                                             "Congratulations!".tr(),
                                             "Successful unlost!".tr());
                                         presenter.fetchMycardsList();
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       }
                                     } else if (type == 4) {
                                       Map result = await presenter.lost33Card(
@@ -1971,8 +2188,12 @@ class HomeView extends StatelessWidget {
                                             "Congratulations!".tr(),
                                             "Successful lost!".tr());
                                         presenter.fetchMycardsList();
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       }
                                     } else if (type == 5) {
                                       String oldPin =
@@ -1996,6 +2217,9 @@ class HomeView extends StatelessWidget {
                                             "Successful PIN Modification!"
                                                 .tr());
                                         presenter.fetchMycardsList();
+                                        _oldPasswordController.text = "";
+                                        _newPasswordController.text = "";
+                                        _confirmPasswordController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
                                         _oldPasswordController.text = "";
@@ -2021,10 +2245,16 @@ class HomeView extends StatelessWidget {
                                             "Congratulations!".tr(),
                                             "Successful transfer!".tr());
                                         presenter.fetchMycardsList();
+                                        _cardNumberController.text = "";
+                                        _amountController.text = "";
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       } else {
                                         showTopError(context, result["msg"]);
                                         _cardNumberController.text = "";
                                         _amountController.text = "";
+                                        _safetyPinCodeController.text = "";
+                                        _emailCodeController.text = "";
                                       }
                                     }
                                   },
@@ -2058,7 +2288,15 @@ class HomeView extends StatelessWidget {
                   );
                 });
           });
-        }).whenComplete(() {});
+        }).whenComplete(() {}).then((value) {
+      _safetyPinCodeController.text = "";
+      _emailCodeController.text = "";
+      _cardNumberController.text = "";
+      _amountController.text = "";
+      _oldPasswordController.text = "";
+      _newPasswordController.text = "";
+      _confirmPasswordController.text = "";
+    });
   }
 
   Widget _buildSafetyPinView(BuildContext context, int type) {
@@ -2271,7 +2509,7 @@ class HomeView extends StatelessWidget {
               builder: (BuildContext context1, StateSetter mystate) {
             return StreamBuilder<int>(
                 stream: safetyController.stream,
-                builder: (context, snapshot) {
+                builder: (context1, snapshot) {
                   return Container(
                     decoration: BoxDecoration(
                         color: _theme == AppTheme.light
@@ -2314,7 +2552,9 @@ class HomeView extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Image.asset(A.assets_warning_icon),
+                                      Image.asset(_theme == AppTheme.light
+                                          ? A.assets_warning_black
+                                          : A.assets_warning_icon),
                                       SizedBox(
                                         width: 10,
                                       ),
@@ -2323,7 +2563,10 @@ class HomeView extends StatelessWidget {
                                           "Freezing a card causes failed orders, causing transaction failure or additional fees for declined transactions."
                                               .tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: _theme == AppTheme.light
+                                                  ? AppStatus
+                                                      .shared.bgBlackColor
+                                                  : Colors.white,
                                               fontSize: 13),
                                         ),
                                       ),
@@ -2336,7 +2579,10 @@ class HomeView extends StatelessWidget {
                                     "Once the one-key card lock function is enabled, you will not be able to use this card, but it will not affect other cards. If you want to cancel the one-key card lock function, you can enable it here again."
                                         .tr(),
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 13),
+                                        color: _theme == AppTheme.light
+                                            ? AppStatus.shared.bgBlackColor
+                                            : Colors.white,
+                                        fontSize: 13),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -2347,7 +2593,9 @@ class HomeView extends StatelessWidget {
                                     children: [
                                       Expanded(
                                         child: InkWell(
-                                          onTap: () async {},
+                                          onTap: () async {
+                                            Navigator.pop(context);
+                                          },
                                           child: Container(
                                             width: double.infinity,
                                             height: 44,
@@ -2380,11 +2628,12 @@ class HomeView extends StatelessWidget {
                                             Map result = await presenter
                                                 .freeze33Card(m.card_order);
                                             Navigator.pop(context);
-                                            if (result["code"] == 0) {
+                                            if (result["code"] == 200) {
                                               showAlertDialog(
                                                   context,
                                                   "Freeze".tr(),
                                                   "Successful freeze!".tr());
+
                                               presenter.fetchMycardsList();
                                             } else {
                                               showTopError(
@@ -2571,16 +2820,20 @@ class HomeView extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Image.asset(A.assets_warning_icon),
+                                      Image.asset(_theme == AppTheme.light
+                                          ? A.assets_warning_black
+                                          : A.assets_warning_icon),
                                       SizedBox(
                                         width: 10,
                                       ),
                                       Expanded(
                                         child: Text(
-                                          "Reminder Reminder Reminder Reminder Reminder."
-                                              .tr(),
+                                          "Reminder".tr(),
                                           style: TextStyle(
-                                              color: Colors.white,
+                                              color: _theme == AppTheme.light
+                                                  ? AppStatus
+                                                      .shared.bgBlackColor
+                                                  : Colors.white,
                                               fontSize: 13),
                                         ),
                                       ),
@@ -2592,7 +2845,10 @@ class HomeView extends StatelessWidget {
                                   Text(
                                     "Enter Old Password:".tr(),
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 13),
+                                        color: _theme == AppTheme.light
+                                            ? AppStatus.shared.bgBlackColor
+                                            : Colors.white,
+                                        fontSize: 13),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -2604,7 +2860,10 @@ class HomeView extends StatelessWidget {
                                   Text(
                                     "Enter New Password:".tr(),
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 13),
+                                        color: _theme == AppTheme.light
+                                            ? AppStatus.shared.bgBlackColor
+                                            : Colors.white,
+                                        fontSize: 13),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -2616,7 +2875,10 @@ class HomeView extends StatelessWidget {
                                   Text(
                                     "Confirm New Password:".tr(),
                                     style: TextStyle(
-                                        color: Colors.white, fontSize: 13),
+                                        color: _theme == AppTheme.light
+                                            ? AppStatus.shared.bgBlackColor
+                                            : Colors.white,
+                                        fontSize: 13),
                                   ),
                                   SizedBox(
                                     height: 10,
@@ -2914,12 +3176,17 @@ class HomeView extends StatelessWidget {
                               Text(
                                 "Amount available".tr(),
                                 style: TextStyle(
-                                    color: AppStatus.shared.textGreyColor,
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : AppStatus.shared.textGreyColor,
                                     fontSize: 13),
                               ),
                               Text("${model.balance}${model.currency}",
                                   style: TextStyle(
-                                      color: Colors.white, fontSize: 16)),
+                                      color: _theme == AppTheme.light
+                                          ? AppStatus.shared.bgBlackColor
+                                          : Colors.white,
+                                      fontSize: 16)),
                             ],
                           ),
                           SizedBox(
@@ -2931,7 +3198,10 @@ class HomeView extends StatelessWidget {
                               Text(
                                 "To:".tr(),
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : Colors.white,
+                                    fontSize: 16),
                               ),
                               SizedBox(
                                 width: 30,
@@ -2948,7 +3218,10 @@ class HomeView extends StatelessWidget {
                               Text(
                                 "Amount:".tr(),
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : Colors.white,
+                                    fontSize: 16),
                               ),
                               SizedBox(
                                 width: 5,
@@ -2960,16 +3233,24 @@ class HomeView extends StatelessWidget {
                               Text(
                                 model.currency,
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : Colors.white,
+                                    fontSize: 16),
                               ),
                               SizedBox(
                                 width: 5,
                               ),
-                              Text(
-                                "Max",
-                                style: TextStyle(
-                                    color: AppStatus.shared.bgBlueColor,
-                                    fontSize: 16),
+                              InkWell(
+                                onTap: () {
+                                  _amountController.text = model.balance;
+                                },
+                                child: Text(
+                                  "Max",
+                                  style: TextStyle(
+                                      color: AppStatus.shared.bgBlueColor,
+                                      fontSize: 16),
+                                ),
                               ),
                             ],
                           ),
@@ -2982,7 +3263,10 @@ class HomeView extends StatelessWidget {
                               Text(
                                 "Transfer fee:".tr(),
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 13),
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : Colors.white,
+                                    fontSize: 13),
                               ),
                               Text(
                                 "${model.card_transfer_fee}${model.card_transfer_fee_unit}",
@@ -3186,6 +3470,217 @@ class HomeView extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  //cardnumber
+  showDisplayCardNumberView(BuildContext context) async {
+    var title = "Diaplay Card Number".tr();
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        constraints: BoxConstraints(maxHeight: 440, minWidth: double.infinity),
+        builder: (BuildContext context2) {
+          return StatefulBuilder(
+              builder: (BuildContext context1, StateSetter mystate) {
+            return StreamBuilder<int>(
+                stream: safetyController.stream,
+                builder: (context3, snapshot) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgWhiteColor
+                            : ColorsUtil.hexColor(0x2E2E2E),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10))),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Container(
+                            width: double.infinity,
+                            child: Center(
+                              child: Text(
+                                title,
+                                style: TextStyle(
+                                    color: _theme == AppTheme.light
+                                        ? AppStatus.shared.bgBlackColor
+                                        : AppStatus.shared.bgWhiteColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SingleChildScrollView(
+                            controller: _safeScroController,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildSafetyPinView(context, 1),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    String safePin = _safetyPinCode;
+                                    if (safePin.isEmpty) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) {
+                                            String error =
+                                                "Please enter Safety Pin".tr();
+                                            return ShowMessage(2, error,
+                                                styleType: 1, width: 257);
+                                          });
+                                      return;
+                                    }
+                                    MycardsModel model =
+                                        presenter.models[_currentPageIndex];
+                                    Map result =
+                                        await presenter.showCardDetail33(
+                                            model.card_order, safePin);
+                                    if (result["code"] == 200) {
+                                      presenter.showCardNum = true;
+                                      var model =
+                                          Card33InfoModel.parse(result["data"]);
+                                      debugPrint(
+                                          "string is ${result["data"]} ----model is ${model.valid_thre}--${model.cvv}");
+                                      presenter.card33Model = model;
+                                      cardNumController.sink.add(0);
+                                      Navigator.pop(context);
+                                      _safetyPinCodeController.text = "";
+                                    } else {
+                                      showTopError(context, result["msg"]);
+                                    }
+                                  },
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: AppStatus.shared.bgBlueColor,
+                                      borderRadius: BorderRadius.circular(22),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Submit".tr(),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 200,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          });
+        }).whenComplete(() {});
+  }
+
+  //提醒设置安全码
+  showSafeAlertDialog(BuildContext context, String title, String content) {
+    String buttonTitle = "OK".tr();
+    showDialog(
+      context: context,
+      builder: (_) {
+        return UnconstrainedBox(
+          constrainedAxis: Axis.vertical,
+          child: Container(
+            // height: height,
+            width: MediaQuery.of(context).size.width - 88,
+            child: Dialog(
+              insetPadding: EdgeInsets.zero,
+              backgroundColor: Colors.transparent,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: _theme == AppTheme.light
+                      ? AppStatus.shared.bgWhiteColor
+                      : ColorsUtil.hexColor(0x252525),
+                ),
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title.tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgBlackColor
+                            : AppStatus.shared.bgWhiteColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      content.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: _theme == AppTheme.light
+                            ? AppStatus.shared.bgBlackColor
+                            : AppStatus.shared.bgWhiteColor,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 32,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                        presenter.toSafetyPinPage(context);
+                      },
+                      child: Container(
+                        height: 44,
+                        width: MediaQuery.of(context).size.width - 88 - 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(22),
+                          color: AppStatus.shared.bgBlueColor,
+                        ),
+                        child: Center(
+                          child: Text(
+                            buttonTitle,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

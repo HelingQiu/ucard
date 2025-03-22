@@ -16,17 +16,17 @@
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
 
-    <style name="AppThemeCustomJumio" parent="Theme.Jumio">
-        <item name="colorPrimary">#FFCD00</item>
-        <item name="jumio_background">#141722</item>
-        <item name="jumio_text_foreground">#FFFFFF</item>
-        <item name="jumio_navigation_icon">#FFFFFF</item>
-        <item name="jumio_primary_button_background">#FFCD00</item>
-        <item name="jumio_primary_button_foreground">#000000</item>
-        <item name="jumio_primary_button_background_pressed">#B38F00</item>
-        <item name="jumio_bubble_background">#1A202E</item>
-        <item name="jumio_bubble_foreground">#FFFFFF</item>
-        <item name="jumio_search_bubble_foreground">#FFFFFF</item>
-        <item name="jumio_loading_circle_plain">#FFCD00</item>
-    </style>
+    <!--    <style name="AppThemeCustomJumio" parent="Theme.Jumio">-->
+    <!--        <item name="colorPrimary">#FFCD00</item>-->
+    <!--        <item name="jumio_background">#141722</item>-->
+    <!--        <item name="jumio_text_foreground">#FFFFFF</item>-->
+    <!--        <item name="jumio_navigation_icon">#FFFFFF</item>-->
+    <!--        <item name="jumio_primary_button_background">#FFCD00</item>-->
+    <!--        <item name="jumio_primary_button_foreground">#000000</item>-->
+    <!--        <item name="jumio_primary_button_background_pressed">#B38F00</item>-->
+    <!--        <item name="jumio_bubble_background">#1A202E</item>-->
+    <!--        <item name="jumio_bubble_foreground">#FFFFFF</item>-->
+    <!--        <item name="jumio_search_bubble_foreground">#FFFFFF</item>-->
+    <!--        <item name="jumio_loading_circle_plain">#FFCD00</item>-->
+    <!--    </style>-->
 </resources>

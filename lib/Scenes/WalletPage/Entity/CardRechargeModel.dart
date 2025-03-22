@@ -8,6 +8,7 @@ class CardRechargeModel {
   String created_at;
   String currency;
   DateTime created_at_int;
+  int card_source;
 
   CardRechargeModel(
       this.rechargeId,
@@ -18,7 +19,9 @@ class CardRechargeModel {
       this.money,
       this.created_at,
       this.currency,
-      this.created_at_int);
+      this.created_at_int,
+      this.card_source);
+
   factory CardRechargeModel.parse(Map<String, dynamic> data) {
     int rechargeId = 0;
     var d1 = data["id"];
@@ -41,7 +44,12 @@ class CardRechargeModel {
     if (at != null && at is int) {
       created_at_int = DateTime.fromMillisecondsSinceEpoch(at * 1000);
     }
+    int card_source = 0;
+    var cs = data["card_source"];
+    if (cs != null && cs is int) {
+      card_source = cs;
+    }
     return CardRechargeModel(rechargeId, card_level, card_level_str, card_no,
-        card_type, money, created_at, currency, created_at_int);
+        card_type, money, created_at, currency, created_at_int, card_source);
   }
 }

@@ -2,11 +2,6 @@ PODS:
   - connectivity_plus (0.0.1):
     - Flutter
     - FlutterMacOS
-  - DatadogCore (2.1.2):
-    - DatadogInternal (= 2.1.2)
-  - DatadogInternal (2.1.2)
-  - DatadogRUM (2.1.2):
-    - DatadogInternal (= 2.1.2)
   - device_info_plus (0.0.1):
     - Flutter
   - Firebase/CoreOnly (10.25.0):
@@ -44,6 +39,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_app_badger (1.3.0):
     - Flutter
+  - flutter_idensic_mobile_sdk_plugin (1.34.3):
+    - Flutter
+    - IdensicMobileSDK (= 1.34.1)
+    - IdensicMobileSDK/MRTDReader (= 1.34.1)
   - flutter_inappwebview (0.0.1):
     - Flutter
     - flutter_inappwebview/Core (= 0.0.1)
@@ -80,31 +79,20 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - IdensicMobileSDK (1.34.1):
+    - IdensicMobileSDK/Default (= 1.34.1)
+  - IdensicMobileSDK/Core (1.34.1)
+  - IdensicMobileSDK/Default (1.34.1):
+    - IdensicMobileSDK/Core
+  - IdensicMobileSDK/MRTDReader (1.34.1):
+    - IdensicMobileSDK/MRTDReader-latest
+  - IdensicMobileSDK/MRTDReader-latest (1.34.1):
+    - IdensicMobileSDK/Core
+    - OpenSSL-Universal (>= 3.1.5001)
   - image_gallery_saver (2.0.2):
     - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
-  - iProov (11.0.3)
-  - Jumio (4.9.1):
-    - Jumio/All (= 4.9.1)
-  - Jumio/All (4.9.1):
-    - Jumio/Datadog (= 4.9.1)
-    - Jumio/DefaultUI (= 4.9.1)
-    - Jumio/IProov (= 4.9.1)
-    - Jumio/Jumio (= 4.9.1)
-    - Jumio/Liveness (= 4.9.1)
-  - Jumio/Datadog (4.9.1):
-    - DatadogCore (~> 2.1.2)
-    - DatadogRUM (~> 2.1.2)
-  - Jumio/DefaultUI (4.9.1)
-  - Jumio/IProov (4.9.1):
-    - iProov (~> 11.0.3)
-    - Jumio/Liveness (= 4.9.1)
-  - Jumio/Jumio (4.9.1)
-  - Jumio/Liveness (4.9.1)
-  - jumio_mobile_sdk_flutter (4.9.0):
-    - Flutter
-    - Jumio (~> 4.9.1)
   - local_auth_darwin (0.0.1):
     - Flutter
   - MTBBarcodeScanner (5.0.11)
@@ -113,6 +101,7 @@ PODS:
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
+  - OpenSSL-Universal (3.3.2000)
   - OrderedSet (5.0.0)
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -145,10 +134,10 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_app_badger (from `.symlinks/plugins/flutter_app_badger/ios`)
+  - flutter_idensic_mobile_sdk_plugin (from `.symlinks/plugins/flutter_idensic_mobile_sdk_plugin/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
-  - jumio_mobile_sdk_flutter (from `.symlinks/plugins/jumio_mobile_sdk_flutter/ios`)
   - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -161,10 +150,9 @@ DEPENDENCIES:
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
+  https://github.com/SumSubstance/Specs.git:
+    - IdensicMobileSDK
   trunk:
-    - DatadogCore
-    - DatadogInternal
-    - DatadogRUM
     - Firebase
     - FirebaseCore
     - FirebaseCoreInternal
@@ -172,10 +160,9 @@ SPEC REPOS:
     - FirebaseMessaging
     - GoogleDataTransport
     - GoogleUtilities
-    - iProov
-    - Jumio
     - MTBBarcodeScanner
     - nanopb
+    - OpenSSL-Universal
     - OrderedSet
     - PromisesObjC
 
@@ -192,14 +179,14 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_app_badger:
     :path: ".symlinks/plugins/flutter_app_badger/ios"
+  flutter_idensic_mobile_sdk_plugin:
+    :path: ".symlinks/plugins/flutter_idensic_mobile_sdk_plugin/ios"
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
   image_gallery_saver:
     :path: ".symlinks/plugins/image_gallery_saver/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
-  jumio_mobile_sdk_flutter:
-    :path: ".symlinks/plugins/jumio_mobile_sdk_flutter/ios"
   local_auth_darwin:
     :path: ".symlinks/plugins/local_auth_darwin/darwin"
   path_provider_foundation:
@@ -223,9 +210,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
-  DatadogCore: 24190ba2cf526577212a9a6dd99e323684a867c1
-  DatadogInternal: 5b02abb37a3ea80b86b0b02463d305b53f76d8d0
-  DatadogRUM: 5372a3c69f865a0f98870818144bf0b6c3282136
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
   Firebase: 0312a2352584f782ea56f66d91606891d4607f06
   firebase_core: 0b39f4f424e02eecabb2356ddf331fa07b772af8
@@ -236,17 +220,17 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 88950ba9485052891ebe26f6c43a52bb62248952
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_app_badger: b87fc231847b03b92ce1412aa351842e7e97932f
+  flutter_idensic_mobile_sdk_plugin: cc04ffd78afb0d27a97ce3c5d85fc84c666cad97
   flutter_inappwebview: 3d32228f1304635e7c028b0d4252937730bbc6cf
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
+  IdensicMobileSDK: 1c37c8a37df3fedf4f60937f66abc13885c21fe5
   image_gallery_saver: cb43cc43141711190510e92c460eb1655cd343cb
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  iProov: c596936165f56fab2e08d76e9dc94b86db2f4e8f
-  Jumio: a25b3d22c0715d563879497a78b92191ea3bed6f
-  jumio_mobile_sdk_flutter: d56c555db2b253e619a2191f25f8f1a3521702da
   local_auth_darwin: 4d56c90c2683319835a61274b57620df9c4520ab
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  OpenSSL-Universal: b60a3702c9fea8b3145549d421fdb018e53ab7b4
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
@@ -259,6 +243,6 @@ SPEC CHECKSUMS:
   sqflite: 673a0e54cc04b7d6dba8d24fb8095b31c3a99eec
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
-PODFILE CHECKSUM: 2970b915d2d34389490f5de0a3ef72cb34cca81d
+PODFILE CHECKSUM: d5cdcc00e6156cddc5e431478d549c5828ba2d6f
 
 COCOAPODS: 1.15.2
